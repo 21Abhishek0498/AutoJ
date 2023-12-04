@@ -7,9 +7,9 @@ import com.auto.gen.junit.autoj.dto.TestClassBuilder;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +31,7 @@ public class ParseJavaFile implements ParseFile{
     @Override
     public TestClassBuilder startParsing(String fileName) throws IOException {
         CompilationUnit cu = getCompilationUnit(fileName);
-        TestClassBuilder testClass = new TestClassBuilder(cu.getClass().getName(), cu.getPackageDeclaration().get().getName().asString());
+        TestClassBuilder testClass = new TestClassBuilder(cu.getType(0).getNameAsString(), cu.getPackageDeclaration().get().getName().asString());
         log.info("Source class : "+ testClass.getTestClassName());
         log.info("PackageName : "+ testClass.getPackageName());
         testClass.addImportStatements(ParserUtil.getImportStatementsFromSourceClass(cu));
@@ -43,7 +43,7 @@ public class ParseJavaFile implements ParseFile{
     public List<ClazzDependencies> getAllClassDependencies(CompilationUnit cu, String className){
         List<Class> excludeClassDependencies = ClazzDependencies.builder().build().getExcludeList();
         List<ClazzDependencies> clasDependencies = null;
-        for (ClassOrInterfaceDeclaration classOrInterfaceDeclaration : cu.getLocalDeclarationFromClassname(className)) {
+        for (TypeDeclaration<?> classOrInterfaceDeclaration : cu.getTypes()) {
             clasDependencies = classOrInterfaceDeclaration.getFields().stream().filter(fieldDeclaration -> !excludeClassDependencies.contains(fieldDeclaration.getElementType().asClassOrInterfaceType().getClass()))
                     .map(FieldDeclaration::asFieldDeclaration)
                     .map( field ->

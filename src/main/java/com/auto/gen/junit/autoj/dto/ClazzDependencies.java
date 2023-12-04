@@ -4,7 +4,6 @@ import com.github.javaparser.ast.type.Type;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ public class ClazzDependencies {
         clazzDependenciesList = new ArrayList<>();
     }*/
     public List<Class> getExcludeList(){
+        excludeList = new ArrayList<>();
         excludeList.add(String.class);
         excludeList.add(Long.class);
         excludeList.add(Integer.class);

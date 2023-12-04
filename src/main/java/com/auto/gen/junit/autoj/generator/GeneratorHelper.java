@@ -27,6 +27,6 @@ public class GeneratorHelper implements Generator {
         List<TestClassBuilder> testClassList = new ArrayList<>();
         TestClassBuilder testClass= parseFile.startParsing(sourceCodePath);
         testClassList.add(testClass);
-        return null;
+        return testClassList;
     }
 }

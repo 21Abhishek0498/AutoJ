@@ -1,18 +1,21 @@
 package com.auto.gen.junit.autoj;
 
+import com.auto.gen.junit.autoj.dto.TestClassBuilder;
+import com.auto.gen.junit.autoj.parser.ParseFile;
 import com.auto.gen.junit.autoj.validator.intf.SourceCodePathValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.Objects;
-
 @SpringBootApplication
 public class AutoJApplication implements CommandLineRunner {
 
 	@Autowired
 	private SourceCodePathValidator sourceCodePathValidator;
+
+	@Autowired
+	private ParseFile parseFile;
 
 	public static void main(String[] args) {
 		SpringApplication.run(AutoJApplication.class, args);
@@ -24,8 +27,10 @@ public class AutoJApplication implements CommandLineRunner {
 	 */
 	@Override
 	public void run(String... args) throws Exception {
-		validatePath(args);
+		//validatePath(args);
 
+		TestClassBuilder testClassBuilder = parseFile.startParsing("src/main/java/com/auto/gen/junit/autoj/AutoJApplication.java");
+		System.out.println(testClassBuilder.toString());
 	}
 
 	private void validatePath(String[] args) {
