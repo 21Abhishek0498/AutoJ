@@ -48,9 +48,9 @@ public class DependenciesConfigController {
         }
     }
 
-    @PostMapping(value = "/GenerateTestcase/project-path")
-    public ResponseEntity<String> genrateTestcase(@RequestParam(name = "project-location", required = true) String path)
-    {
+    @GetMapping(value = "/GenerateTestcase/project-path")
+    public ResponseEntity<String> genrateTestcase(@RequestParam(name = "project-location", required = true) String path) throws Exception {
+        serviceImpl.checkDedendencyAndBuildTest(path);
 
         return new ResponseEntity<>("Testcase generated", HttpStatus.OK);
     }

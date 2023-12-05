@@ -1,5 +1,7 @@
 package com.auto.gen.junit.autoj.mapper;
 
+import com.auto.gen.junit.autoj.dto.ParsedClassDto;
+import com.auto.gen.junit.autoj.model.ParsedClass;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,5 +24,14 @@ public class CommonObjectMapper {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static ParsedClass toEntity(ParsedClassDto dto) {
+        return ParsedClass.builder()
+                .ClassName(dto.getClassName())
+                .payload(dto.getPayload())
+                .createdDate(dto.getCreatedDate())
+                .version(dto.getVersion())
+                .build();
     }
 }

@@ -1,8 +1,11 @@
 package com.auto.gen.junit.autoj.service;
 
-import com.auto.gen.junit.autoj.constants.Constants;
+import com.auto.gen.junit.autoj.dto.ParsedClassDto;
+import com.auto.gen.junit.autoj.generator.Generator;
 import com.auto.gen.junit.autoj.mapper.CommonObjectMapper;
-import com.auto.gen.junit.autoj.parser.ParseJavaFile;
+import com.auto.gen.junit.autoj.model.ParsedClass;
+import com.auto.gen.junit.autoj.repository.ParsedClassRepository;
+import com.github.javaparser.ParseProblemException;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -22,7 +25,10 @@ import java.util.Map;
 public class ServiceImpl {
 
     @Autowired
-    private ParseJavaFile parseJavaFile;
+    private Generator parseJavaFile;
+
+    @Autowired
+    private ParsedClassRepository repo;
 
     public Map<String, String> getJavaVersionAndSpringVersion(String pathOfFile) throws Exception {
         Model model = readModel(pathOfFile);
@@ -125,49 +131,85 @@ public class ServiceImpl {
         }
     }
 
+//    public void checkDedendencyAndBuildTest(String path) throws Exception {
+//    try {
+//        repo.deleteAll();
+//        var directory=new File(path);
+//
+//        if (directory.isDirectory()) {
+//            for (File file : directory.listFiles()) {
+//               if (file.getName().endsWith(".java")) {
+//
+//                    String jsonString = CommonObjectMapper.toJsonString(parseJavaFile.startParsing(file.getName()));
+//                    // Save JSON string to MongoDB
+//                    ParsedClassDto dto = ParsedClassDto.builder().ClassName(file.getName())
+//                            .payload(jsonString).createdDate(new java.util.Date()).version(1L)
+//                            .build();
+//                    saveToMongoDB(dto);
+//
+//                }
+//            }
+//        }
+//
+//    } catch
+//    (ParseProblemException e) {
+//
+//        e.getProblems().forEach(problem -> System.err.println(
+//                "Problem: "
+//                        + problem));
+//
+//// Handle the exception or rethrow if needed
+//
+//    } catch (Exception e) {
+//        // Handle the exception according to your requirements
+//        e.printStackTrace();
+//        throw new Exception(e.getMessage());
+//    }
+//
+//    }
+
+    private void saveToMongoDB(ParsedClassDto dto) {
+        ParsedClass entity = CommonObjectMapper.toEntity(dto);
+        repo.save(entity);
+        System.out.println(repo.findAll().toString());
+
+    }
+
     public void checkDedendencyAndBuildTest(String path) throws Exception {
-    try {
-        if (isDependencyPresent(Constants.GROUP_ID, Constants.ARTIFACT_ID, path)) {
-            System.out.println("Dependency already present in the POM file. No changes made.");
-        } else {
-            addDependencyToPom(Constants.GROUP_ID, Constants.ARTIFACT_ID, Constants.SCOPE_ID, path);
-            mavenBuild(path);
-            System.out.println("Dependency added to POM file. Maven build triggered.");
-        }
-        parseAndSave(new File(path));
+        try {
+            repo.deleteAll();
+            var directory = new File(path);
 
-    }
-    catch (Exception e) {
+            if (directory.isDirectory()) {
+                for (File file : directory.listFiles()) {
+                    if (file.getName().endsWith(".java")) {
 
-    }
+                        String jsonString = CommonObjectMapper.toJsonString(parseJavaFile.generate(directory.toPath().toString()));
+                        // Save JSON string to MongoDB
+                        ParsedClassDto dto = ParsedClassDto.builder().ClassName(file.getName())
+                                .payload(jsonString).createdDate(new java.util.Date()).version(1L)
+                                .build();
+                        saveToMongoDB(dto);
 
-    }
-
-
-    private void parseAndSave(File directory) throws IOException {
-        if (directory.isDirectory()) {
-            for (File file : directory.listFiles()) {
-                if (file.isDirectory()) {
-                    parseAndSave(file);
-                } else if (file.getName().endsWith(".java")) {
-                    parseJavaFile.startParsing(file.getName());
-                    String jsonString = CommonObjectMapper.toJsonString(parseJavaFile.startParsing(file.getName()));
-                    // Save JSON string to MongoDB
-                   // saveToMongoDB(file.getName(), jsonString, collection);
+                    }
                 }
             }
+
+        } catch
+        (ParseProblemException e) {
+
+            e.getProblems().forEach(problem -> System.err.println(
+                    "Problem: "
+                            + problem));
+
+        } catch (Exception e) {
+            // Handle the exception according to your requirements
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
         }
 
     }
 
-//    private static void saveToMongoDB(String className, String jsonString, MongoCollection<Document> collection) {
-//        Map<String, Object> documentMap = new HashMap<>();
-//        documentMap.put("class_name", className);
-//        documentMap.put("json_string", jsonString);
-//
-//        Document document = new Document(documentMap);
-//        collection.insertOne(document);
-//    }
 }
 
 
