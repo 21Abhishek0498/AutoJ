@@ -1,17 +1,19 @@
 package com.auto.gen.junit.autoj.writer;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.lang.model.element.Modifier;
+
 import com.auto.gen.junit.autoj.dto.ClazImportStatement;
 import com.auto.gen.junit.autoj.dto.ClazzDependencies;
 import com.auto.gen.junit.autoj.dto.Method;
 import com.auto.gen.junit.autoj.dto.TestClassBuilder;
 import com.github.javaparser.ast.body.Parameter;
+
 import io.jbock.javapoet.JavaFile;
 import io.jbock.javapoet.MethodSpec;
 import io.jbock.javapoet.TypeSpec;
-
-import javax.lang.model.element.Modifier;
-import java.io.IOException;
-import java.util.List;
 
 public class ClassWriter implements Writer{
 

@@ -1,12 +1,13 @@
 package com.auto.gen.junit.autoj.validator;
 
-import com.auto.gen.junit.autoj.exceptions.PathDoesNotExistsException;
-import com.auto.gen.junit.autoj.validator.intf.SourceCodePathValidator;
-import org.springframework.stereotype.Service;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.springframework.stereotype.Service;
+
+import com.auto.gen.junit.autoj.exceptions.PathDoesNotExistsException;
+import com.auto.gen.junit.autoj.validator.intf.SourceCodePathValidator;
 
 @Service
 public class SourcePathValidator implements SourceCodePathValidator {

@@ -1,20 +1,20 @@
 package com.auto.gen.junit.autoj.transformer;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.auto.gen.junit.autoj.dto.ClazzDependencies;
 import com.auto.gen.junit.autoj.dto.Method;
 import com.auto.gen.junit.autoj.dto.TestClassBuilder;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class Tansformer implements TransformerProcessor {

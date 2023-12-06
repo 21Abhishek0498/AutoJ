@@ -1,13 +1,14 @@
 package com.auto.gen.junit.autoj.generator;
 
-import com.auto.gen.junit.autoj.dto.TestClassBuilder;
-import com.auto.gen.junit.autoj.parser.ParseFile;
-import com.auto.gen.junit.autoj.validator.intf.SourceCodePathValidator;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.auto.gen.junit.autoj.dto.TestClassBuilder;
+import com.auto.gen.junit.autoj.parser.ParseFile;
+import com.auto.gen.junit.autoj.validator.intf.SourceCodePathValidator;
 
 public class GeneratorHelper implements Generator {
 

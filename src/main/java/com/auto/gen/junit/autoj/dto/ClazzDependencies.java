@@ -1,17 +1,21 @@
 package com.auto.gen.junit.autoj.dto;
 
-import com.github.javaparser.ast.type.Type;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.github.javaparser.ast.type.Type;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
 @Builder
 @Setter
 @Getter
+@Document(collection = "clazz_dependencies")
 public class ClazzDependencies {
     private String name;
     private Type type;

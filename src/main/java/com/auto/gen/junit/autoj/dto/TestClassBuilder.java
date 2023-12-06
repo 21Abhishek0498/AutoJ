@@ -1,11 +1,14 @@
 package com.auto.gen.junit.autoj.dto;
 
-import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import lombok.Data;
+
 @Data
+@Document(collection = "testclass_builder")
 public class TestClassBuilder {
     private final String testClassName;
     private List<Method> methodList;
