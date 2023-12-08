@@ -6,6 +6,7 @@ import com.auto.gen.junit.autoj.dto.Method;
 import com.auto.gen.junit.autoj.dto.TestClassBuilder;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -13,6 +14,7 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -25,18 +27,18 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ParseJavaFile implements ParseFile{
     /**
-     * @param fileName
+     * @param file
      * @return
      */
     @Override
-    public TestClassBuilder startParsing(String fileName) throws IOException {
-        CompilationUnit cu = getCompilationUnit(fileName);
+    public TestClassBuilder startParsing(File file) throws IOException {
+        CompilationUnit cu  = StaticJavaParser.parse(file);
         TestClassBuilder testClass = new TestClassBuilder(cu.getType(0).getNameAsString(), cu.getPackageDeclaration().get().getName().asString());
         log.info("Source class : "+ testClass.getTestClassName());
         log.info("PackageName : "+ testClass.getPackageName());
         testClass.addImportStatements(ParserUtil.getImportStatementsFromSourceClass(cu));
         testClass.addMethods(getAllMethodOfSourceClass(cu));
-        testClass.addClassDependencies(getAllClassDependencies(cu, fileName));
+        testClass.addClassDependencies(getAllClassDependencies(cu, file.getName()));
         return testClass;
     }
 
@@ -60,7 +62,7 @@ public class ParseJavaFile implements ParseFile{
         List<Method> methodList = new ArrayList<>();
         cu.findAll(MethodDeclaration.class).forEach(
                 methodDeclaration -> {
-                   Method method = Method.builder().methodName(methodDeclaration.getType().asString())
+                   Method method = Method.builder().methodName(methodDeclaration.getNameAsString())
                                     .methodParameters((methodDeclaration.getParameters().stream().collect(Collectors.toList())))
                                     .methodBody(Method.MethodBody.builder().methodBody(methodDeclaration.getBody()).build())
                                     .accessModifier("")

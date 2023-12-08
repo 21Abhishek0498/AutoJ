@@ -9,7 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AutoJApplication implements CommandLineRunner {
+public class AutoJApplication {
 
 	@Autowired
 	private SourceCodePathValidator sourceCodePathValidator;
@@ -21,23 +21,5 @@ public class AutoJApplication implements CommandLineRunner {
 		SpringApplication.run(AutoJApplication.class, args);
 	}
 
-	/**
-	 * @param args
-	 * @throws Exception
-	 */
-	@Override
-	public void run(String... args) throws Exception {
-		//validatePath(args);
 
-		TestClassBuilder testClassBuilder = parseFile.startParsing("src/main/java/com/auto/gen/junit/autoj/AutoJApplication.java");
-		System.out.println(testClassBuilder.toString());
-	}
-
-	private void validatePath(String[] args) {
-		if (args !=null && args.length  > 0)
-			sourceCodePathValidator.validate(args[0]);
-		else{
-			System.out.println("Please provide a valid path");
-		}
-	}
 }
