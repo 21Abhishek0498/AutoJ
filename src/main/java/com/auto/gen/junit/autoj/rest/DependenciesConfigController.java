@@ -1,18 +1,15 @@
 package com.auto.gen.junit.autoj.rest;
 
 
-import com.auto.gen.junit.autoj.constants.Constants;
 import com.auto.gen.junit.autoj.dto.TestClassBuilder;
 import com.auto.gen.junit.autoj.generator.GeneratorHelper;
 import com.auto.gen.junit.autoj.service.CodeParser;
 import com.auto.gen.junit.autoj.service.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.io.FileNotFoundException;
@@ -27,6 +24,8 @@ public class DependenciesConfigController {
 
     @Autowired
     private ServiceImpl serviceImpl;
+    @Autowired
+    private Environment env;
 
     @Autowired
     private GeneratorHelper codeParser;
@@ -45,13 +44,15 @@ public class DependenciesConfigController {
     @GetMapping(value = "/check-and-add/pom-path")
     public ResponseEntity<String> checkAndAddDependency(@RequestParam(name = "pathToPom", required = true) String pathToPom) {
         try {
-
-            boolean isDependencyPresent = serviceImpl.isDependencyPresent(Constants.GROUP_ID, Constants.ARTIFACT_ID, pathToPom);
+            String groupId = env.getProperty("dependency.group.id");
+            String artifactId = env.getProperty("dependency.artifact.id");
+            String scopeId = env.getProperty("dependency.scope.id");
+            boolean isDependencyPresent = serviceImpl.isDependencyPresent(groupId,artifactId, pathToPom);
 
             if (isDependencyPresent) {
                 return new ResponseEntity<>("Dependency already present in the POM file. No changes made.", HttpStatus.OK);
             } else {
-                serviceImpl.addDependencyToPom(Constants.GROUP_ID, Constants.ARTIFACT_ID, Constants.SCOPE_ID, pathToPom);
+                serviceImpl.addDependencyToPom(groupId,artifactId, scopeId, pathToPom);
                 serviceImpl.mavenBuild(pathToPom);
                 return new ResponseEntity<>("Dependency added to POM file. Maven build triggered.", HttpStatus.OK);
             }
@@ -62,37 +63,9 @@ public class DependenciesConfigController {
     }
 
     @GetMapping(value = "/GenerateTestcase/project-path")
-    public  ResponseEntity<List<TestClassBuilder>> genrateTestcase(@RequestParam(name = "project-location", required = true) String path) throws IOException {
-
-            var parsedData = codeParser.generate(path);
-
-            for (Map.Entry<String, Object> entry : parsedData.entrySet()) {
-                String fileName = entry.getKey();
-                Object parsedObject = entry.getValue();
-
-                // Now you can do something with the key and value
-                System.out.println("File Name: " + fileName);
-
-                if (parsedObject instanceof Map) {
-                    // If the value is another map, it means it's a subdirectory
-                    System.out.println("Subdirectory Contents:");
-                    Map<String, Object> subdirectoryData = (Map<String, Object>) parsedObject;
-                    for (Map.Entry<String, Object> subEntry : subdirectoryData.entrySet()) {
-                        System.out.println("  " + subEntry.getKey() + ": " + subEntry.getValue());
-                    }
-                } else {
-                    // If the value is not a map, it means it's the parsed data for a file
-                    System.out.println("Parsed Data:");
-                    System.out.println(parsedObject);
-                }
-
-                System.out.println("--------------------------");
-            }
-            return new ResponseEntity<>(null, HttpStatus.OK);
-        }
-
-//        return new ResponseEntity<>(codeParser.generate(path), HttpStatus.OK);
-//    }
+    public ResponseEntity<Map<String, Object>> genrateTestcase(@RequestParam(name = "project-location", required = true) String path) throws IOException {
+        return new ResponseEntity<>(codeParser.generate(path), HttpStatus.OK);
+    }
 }
 
 
