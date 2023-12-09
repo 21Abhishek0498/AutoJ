@@ -4,6 +4,7 @@ import com.auto.gen.junit.autoj.ParserUtil;
 import com.auto.gen.junit.autoj.dto.ClazzDependencies;
 import com.auto.gen.junit.autoj.dto.Method;
 import com.auto.gen.junit.autoj.dto.TestClassBuilder;
+import com.auto.gen.junit.autoj.type.resolver.Resolver;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;
@@ -11,7 +12,9 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -26,12 +29,17 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ParseJavaFile implements ParseFile{
+
+    @Autowired
+    private Resolver resolver;
+
     /**
      * @param file
      * @return
      */
     @Override
     public TestClassBuilder startParsing(File file) throws IOException {
+        resolver.setResolver(file.getName());
         CompilationUnit cu  = StaticJavaParser.parse(file);
         TestClassBuilder testClass = new TestClassBuilder(cu.getType(0).getNameAsString(), cu.getPackageDeclaration().get().getName().asString());
         log.info("Source class : "+ testClass.getTestClassName());
@@ -39,6 +47,8 @@ public class ParseJavaFile implements ParseFile{
         testClass.addImportStatements(ParserUtil.getImportStatementsFromSourceClass(cu));
         testClass.addMethods(getAllMethodOfSourceClass(cu));
         testClass.addClassDependencies(getAllClassDependencies(cu, file.getName()));
+        cu.findAll(MethodCallExpr.class).forEach(mce ->
+                System.out.println(mce.resolve().getSignature()));
         return testClass;
     }
 
@@ -62,7 +72,7 @@ public class ParseJavaFile implements ParseFile{
         List<Method> methodList = new ArrayList<>();
         cu.findAll(MethodDeclaration.class).forEach(
                 methodDeclaration -> {
-                   Method method = Method.builder().methodName(methodDeclaration.getNameAsString())
+                   Method method = Method.builder().methodName(methodDeclaration.resolve().getName())
                                     .methodParameters((methodDeclaration.getParameters().stream().collect(Collectors.toList())))
                                     .methodBody(Method.MethodBody.builder().methodBody(methodDeclaration.getBody()).build())
                                     .accessModifier("")
@@ -78,7 +88,6 @@ public class ParseJavaFile implements ParseFile{
     public CompilationUnit getCompilationUnit(String fileName) throws IOException {
         if(Objects.isNull(fileName))
             throw new FileNotFoundException("File name cannot be null");
-        ParseResult<CompilationUnit> parseResult = new JavaParser().parse(Paths.get(fileName));
-        return parseResult.getResult().get();
+        return StaticJavaParser.parse(Paths.get(fileName));
     }
 }
