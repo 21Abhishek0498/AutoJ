@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -33,19 +34,19 @@ public class ParseJavaFile implements ParseFile{
     private Resolver resolver;
 
     /**
-     * @param fileName
+     * @param file
      * @return
      */
     @Override
-    public TestClassBuilder startParsing(String fileName) throws IOException {
-        resolver.setResolver(fileName);
-        CompilationUnit cu = getCompilationUnit(fileName);
+    public TestClassBuilder startParsing(File file) throws IOException {
+        resolver.setResolver(file.getName());
+        CompilationUnit cu  = StaticJavaParser.parse(file);
         TestClassBuilder testClass = new TestClassBuilder(cu.getType(0).getNameAsString(), cu.getPackageDeclaration().get().getName().asString());
         log.info("Source class : "+ testClass.getTestClassName());
         log.info("PackageName : "+ testClass.getPackageName());
         testClass.addImportStatements(ParserUtil.getImportStatementsFromSourceClass(cu));
         testClass.addMethods(getAllMethodOfSourceClass(cu));
-        testClass.addClassDependencies(getAllClassDependencies(cu, fileName));
+        testClass.addClassDependencies(getAllClassDependencies(cu, file.getName()));
         cu.findAll(MethodCallExpr.class).forEach(mce ->
                 System.out.println(mce.resolve().getSignature()));
         return testClass;
