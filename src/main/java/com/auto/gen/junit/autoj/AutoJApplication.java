@@ -10,6 +10,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.io.File;
+
 @SpringBootApplication
 public class AutoJApplication implements CommandLineRunner {
 
@@ -36,7 +38,7 @@ public class AutoJApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		//validatePath(args);
 
-		TestClassBuilder testClassBuilder = parseFile.startParsing("src/main/java/com/auto/gen/junit/autoj/AutoJApplication.java");
+		TestClassBuilder testClassBuilder = parseFile.startParsing(new File("src/main/java/com/auto/gen/junit/autoj/AutoJApplication.java"));
 		MyJunitClass junitsClassToBeBuild  = transformerProcessor.transform(testClassBuilder);
 		System.out.println(junitsClassToBeBuild);
 	}
