@@ -1,7 +1,9 @@
 package com.auto.gen.junit.autoj;
 
+import com.auto.gen.junit.autoj.dto.MyJunitClass;
 import com.auto.gen.junit.autoj.dto.TestClassBuilder;
 import com.auto.gen.junit.autoj.parser.ParseFile;
+import com.auto.gen.junit.autoj.transformer.TransformerProcessor;
 import com.auto.gen.junit.autoj.validator.intf.SourceCodePathValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -17,8 +19,13 @@ public class AutoJApplication implements CommandLineRunner {
 	@Autowired
 	private ParseFile parseFile;
 
+	@Autowired
+	private TransformerProcessor transformerProcessor;
+
 	public static void main(String[] args) {
-		SpringApplication.run(AutoJApplication.class, args);
+
+		Class clazz = AutoJApplication.class;
+		SpringApplication.run(clazz, args);
 	}
 
 	/**
@@ -30,7 +37,8 @@ public class AutoJApplication implements CommandLineRunner {
 		//validatePath(args);
 
 		TestClassBuilder testClassBuilder = parseFile.startParsing("src/main/java/com/auto/gen/junit/autoj/AutoJApplication.java");
-		System.out.println(testClassBuilder.toString());
+		MyJunitClass junitsClassToBeBuild  = transformerProcessor.transform(testClassBuilder);
+		System.out.println(junitsClassToBeBuild);
 	}
 
 	private void validatePath(String[] args) {

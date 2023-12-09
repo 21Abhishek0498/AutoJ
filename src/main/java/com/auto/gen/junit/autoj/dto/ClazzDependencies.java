@@ -2,6 +2,7 @@ package com.auto.gen.junit.autoj.dto;
 
 import com.github.javaparser.ast.type.Type;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Builder
 @Setter
 @Getter
+@Data
 public class ClazzDependencies {
     private String name;
     private Type type;
