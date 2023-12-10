@@ -1,20 +1,20 @@
 package com.auto.gen.junit.autoj.generator;
 
 import com.auto.gen.junit.autoj.dto.TestClassBuilder;
-import com.auto.gen.junit.autoj.mapper.CommonObjectMapper;
 import com.auto.gen.junit.autoj.parser.ParseFile;
 import com.auto.gen.junit.autoj.type.resolver.Resolver;
 import com.auto.gen.junit.autoj.validator.intf.SourceCodePathValidator;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class GeneratorHelper implements Generator {
@@ -36,24 +36,31 @@ public class GeneratorHelper implements Generator {
     @Override
     public Map<String, Object> generate(String sourceCodePath) throws IOException {
         Map<String, Object> parsedData = new HashMap<>();
-        File directory = new File(sourceCodePath);
         resolver.setResolver(sourceCodePath);
-        for (File file : directory.listFiles()) {
-            if (file.isFile() && file.getName().endsWith(".java")) {
-
-                TestClassBuilder testClass = parseFile.startParsing(file);
-                parsedData.put("className", testClass.getTestClassName());
-                parsedData.put("testClass", testClass);
-
-            } else if (file.isDirectory()) {
-
-                Map<String, Object> subdirectoryData = generate(file.getPath());
-                parsedData.put(file.getName(), subdirectoryData);
+        Map<String, String> files = getAllSourceDirJavaFiles(sourceCodePath);
+        if(!Objects.isNull(files)){
+            for(Map.Entry<String, String> entry : files.entrySet()) {
+                TestClassBuilder testClass = parseFile.startParsing(new File(entry.getValue()));
+               // parsedData.put("className", testClass.getTestClassName());
+                parsedData.put(testClass.getTestClassName(), testClass);
             }
         }
-
         return parsedData;
     }
-}
 
+
+    public Map<String,String> getAllSourceDirJavaFiles(String sourceCodePath) throws IOException {
+        Map<String, String> files = new HashMap<>();
+        if(!StringUtils.isBlank(sourceCodePath)){
+            Files.walk(Path.of(sourceCodePath))
+                .filter(Files::isRegularFile)
+                .forEach(path -> {
+                    String fileName = String.valueOf(path.getFileName());
+                    String FilePath = path.toString();
+                    files.put(fileName, FilePath);
+                });
+        }
+        return files;
+    }
+}
 

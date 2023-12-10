@@ -12,9 +12,32 @@ import java.util.*;
 @Setter
 @Getter
 public class JunitMethod {
-    private String methodToBeTested;
-    private List<Class> methodToBeTestedParameters;
+    public String getMethodToBeTested() {
+        return methodToBeTested;
+    }
 
+    public void setMethodToBeTested(String methodToBeTested) {
+        this.methodToBeTested = methodToBeTested;
+    }
+
+    public Map<String, Class> getMethodToBeTestedParameters() {
+        return methodToBeTestedParameters;
+    }
+
+    public void setMethodToBeTestedParameters(Map<String, Class> methodToBeTestedParameters) {
+        this.methodToBeTestedParameters = methodToBeTestedParameters;
+    }
+
+    public MockObjects getMockObjects() {
+        return mockObjects;
+    }
+
+    public void setMockObjects(MockObjects mockObjects) {
+        this.mockObjects = mockObjects;
+    }
+
+    private String methodToBeTested;
+    private Map<String,Class> methodToBeTestedParameters;
     private MockObjects mockObjects;
 
     @Builder
@@ -31,9 +54,9 @@ public class JunitMethod {
         }
 
     }
-    public void addMethodToBeTestedParameters(List<Class> methodToBeTestedParameters){
-        this.methodToBeTestedParameters = new ArrayList<>();
-        this.methodToBeTestedParameters.addAll(methodToBeTestedParameters);
+    public void addMethodToBeTestedParameters(Map<String,Class> methodToBeTestedParameters){
+        this.methodToBeTestedParameters = new LinkedHashMap<>();
+        this.methodToBeTestedParameters.putAll(methodToBeTestedParameters);
     }
 
 }
