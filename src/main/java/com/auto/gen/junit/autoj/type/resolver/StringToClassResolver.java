@@ -3,6 +3,7 @@ package com.auto.gen.junit.autoj.type.resolver;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class StringToClassResolver {
@@ -14,11 +15,16 @@ public class StringToClassResolver {
         converter.put("java.lang.String...","[Ljava.lang.String;");
     }
 
-    public String convert(String key){
+    public void convert(String key, Map<String,Class> methodParams) {
         if(converter.containsKey(key)){
-            return converter.get(key);
+            try {
+                methodParams.put(key,Class.forName(converter.get(key)));
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            return;
         }
-        return "";
+        methodParams.put(key,null);
     }
 
 }

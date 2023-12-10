@@ -39,7 +39,7 @@ public class ParseJavaFile implements ParseFile{
      */
     @Override
     public TestClassBuilder startParsing(File file) throws IOException {
-        resolver.setResolver(file.getName());
+       // resolver.setResolver(file.getName());
         CompilationUnit cu  = StaticJavaParser.parse(file);
         TestClassBuilder testClass = new TestClassBuilder(cu.getType(0).getNameAsString(), cu.getPackageDeclaration().get().getName().asString());
         log.info("Source class : "+ testClass.getTestClassName());
@@ -47,8 +47,8 @@ public class ParseJavaFile implements ParseFile{
         testClass.addImportStatements(ParserUtil.getImportStatementsFromSourceClass(cu));
         testClass.addMethods(getAllMethodOfSourceClass(cu));
         testClass.addClassDependencies(getAllClassDependencies(cu, file.getName()));
-        cu.findAll(MethodCallExpr.class).forEach(mce ->
-                System.out.println(mce.resolve().getSignature()));
+        /*cu.findAll(MethodCallExpr.class).forEach(mce ->
+                System.out.println(mce.resolve().getSignature()));*/
         return testClass;
     }
 

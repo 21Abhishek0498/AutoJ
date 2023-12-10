@@ -1,6 +1,7 @@
 package com.auto.gen.junit.autoj.transformer;
 
 import com.auto.gen.junit.autoj.dto.*;
+import com.auto.gen.junit.autoj.exclusions.MethodCallExprExclusions;
 import com.auto.gen.junit.autoj.type.resolver.StringToClassResolver;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
@@ -20,6 +21,9 @@ public class Tansformer implements TransformerProcessor {
     @Autowired
     private StringToClassResolver stringToClassResolver;
 
+    @Autowired
+    private MethodCallExprExclusions methodCallExprExclusions;
+
     /**
      * @param testClassBuilder
      * @return
@@ -35,15 +39,13 @@ public class Tansformer implements TransformerProcessor {
       for(Method method : methods){
 
         Optional<BlockStmt> methodBlock = method.getMethodBody().getMethodBody();
-        List<Class> listParams =  method.getMethodParameters().stream().map(Parameter::resolve).map(ResolvedParameterDeclaration::describeType).map(String::toString).map(type -> {
-            try {
-                return Class.forName(stringToClassResolver.convert(type));
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toList());
+        Map<String,Class> methodToTestParameters = new LinkedHashMap<>();
+        method.getMethodParameters().stream().map(Parameter::resolve)
+                .map(ResolvedParameterDeclaration::describeType)
+                .map(String::toString)
+                .forEach(type -> stringToClassResolver.convert(type,methodToTestParameters));
         JunitMethod junitMethod = JunitMethod.builder().methodToBeTested(method.getMethodName()+"_Test()").build();
-        junitMethod.addMethodToBeTestedParameters(listParams);
+        junitMethod.addMethodToBeTestedParameters(methodToTestParameters);
         classBuilder.addMethod(junitMethod);
         JunitMethod.MockObjects mockObjectsInst = JunitMethod.MockObjects.builder().build();
         if(methodBlock.isPresent()) {
@@ -74,7 +76,7 @@ public class Tansformer implements TransformerProcessor {
     private HashMap<String,List<String>> extractMethodCallExpr(Expression expression) {
         HashMap<String,List<String>> mapping = new LinkedHashMap<>();
         List<String> orderedListOfMockMethod = new LinkedList<>();
-        if (expression.isMethodCallExpr()) {
+        if (expression.isMethodCallExpr() && !expression.asMethodCallExpr().toString().contains(".info(")) {
             System.out.println("expression ::: " + expression.toString());
             System.out.println("Signature ::: " + expression.asMethodCallExpr().resolve().getSignature());
             orderedListOfMockMethod.add(expression.asMethodCallExpr().resolve().getSignature());

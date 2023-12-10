@@ -19,7 +19,7 @@ public class ResolverConfiguration implements Resolver{
     public void setResolver(String sourcePath) throws IOException {
         ClassLoaderTypeSolver classLoaderTypeSolver = new ClassLoaderTypeSolver(ClassLoader.getSystemClassLoader());
         TypeSolver reflectionTypeSolver = new ReflectionTypeSolver();
-        TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(new File("src/main/java/"));
+        TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(new File(sourcePath));
        // JarTypeSolver jarTypeSolver = new JarTypeSolver("./");
         CombinedTypeSolver combinedSolver = new CombinedTypeSolver();
         combinedSolver.add(reflectionTypeSolver);
