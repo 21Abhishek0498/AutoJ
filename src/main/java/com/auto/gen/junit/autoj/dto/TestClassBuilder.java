@@ -9,6 +9,18 @@ import java.util.List;
 
 @Data
 public class TestClassBuilder {
+    public String getTestClassName() {
+        return testClassName;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
     private final String testClassName;
     private List<Method> methodList;
     private List<ClazzDependencies> dependencies;

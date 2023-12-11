@@ -4,6 +4,7 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -16,10 +17,15 @@ public class ResolverConfiguration implements Resolver{
      *
      */
     @Override
-    public void setResolver(String sourcePath) throws IOException {
+    public void setResolver(String sourcePath , String test) throws IOException {
         ClassLoaderTypeSolver classLoaderTypeSolver = new ClassLoaderTypeSolver(ClassLoader.getSystemClassLoader());
         TypeSolver reflectionTypeSolver = new ReflectionTypeSolver();
-        TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(new File(sourcePath));
+        TypeSolver javaParserTypeSolver;
+        if(!StringUtils.isBlank(test))
+            javaParserTypeSolver = new JavaParserTypeSolver(new File("src/main/java"));
+        else {
+            javaParserTypeSolver = new JavaParserTypeSolver(new File(sourcePath));
+        }
        // JarTypeSolver jarTypeSolver = new JarTypeSolver("./");
         CombinedTypeSolver combinedSolver = new CombinedTypeSolver();
         combinedSolver.add(reflectionTypeSolver);

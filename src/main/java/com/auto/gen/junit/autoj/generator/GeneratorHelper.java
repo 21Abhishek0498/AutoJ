@@ -12,9 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class GeneratorHelper implements Generator {
@@ -36,7 +34,7 @@ public class GeneratorHelper implements Generator {
     @Override
     public Map<String, Object> generate(String sourceCodePath) throws IOException {
         Map<String, Object> parsedData = new HashMap<>();
-        resolver.setResolver(sourceCodePath);
+        resolver.setResolver(sourceCodePath, null);
         Map<String, String> files = getAllSourceDirJavaFiles(sourceCodePath);
         if(!Objects.isNull(files)){
             for(Map.Entry<String, String> entry : files.entrySet()) {
@@ -61,6 +59,16 @@ public class GeneratorHelper implements Generator {
                 });
         }
         return files;
+    }
+
+    //Test single class
+    @Override
+    public Map<String, Object> generate(String sourceCodePath, String test) throws IOException {
+        resolver.setResolver(sourceCodePath, test);
+        Map<String, Object> parsedData = new HashMap<>();
+        TestClassBuilder testClass = parseFile.startParsing(new File(sourceCodePath));
+        parsedData.put(testClass.getTestClassName(), testClass);
+        return parsedData;
     }
 }
 

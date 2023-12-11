@@ -48,6 +48,7 @@ public class AutoJApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		//validatePath(args);
 		Map<String,Object> map = generator.generate("src/main/java/");
+		//Map<String,Object> map = generator.generate("src/main/java/com/auto/gen/junit/autoj/generator/GeneratorHelper.java", "test");
 		//TestClassBuilder testClassBuilder = parseFile.startParsing(new File("src/main/java/com/auto/gen/junit/autoj/AutoJApplication.java"));
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			MyJunitClass junitsClassToBeBuild  = transformerProcessor.transform((TestClassBuilder) entry.getValue());
@@ -58,8 +59,7 @@ public class AutoJApplication implements CommandLineRunner {
 	private void validatePath(String[] args) {
 		if (args !=null && args.length  > 0)
 			sourceCodePathValidator.validate(args[0]);
-		else{
+		else
 			System.out.println("Please provide a valid path");
-		}
 	}
 }
