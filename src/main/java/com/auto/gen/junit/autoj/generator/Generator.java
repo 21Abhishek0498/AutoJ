@@ -8,4 +8,5 @@ import java.util.Map;
 
 public interface Generator {
     Map<String, Object> generate(String sourceCodePath) throws IOException;
+    Map<String, Object> generate(String sourceCodePath,String test) throws IOException;
 }

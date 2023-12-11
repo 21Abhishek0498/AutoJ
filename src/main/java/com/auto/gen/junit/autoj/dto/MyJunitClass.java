@@ -14,6 +14,15 @@ import java.util.List;
 @Getter
 public class MyJunitClass {
     private String className;
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
     private List<JunitMethod> methodList;
     private List<ClazzDependencies> dependencies;
     private List<ClazImportStatement> importStatementList;

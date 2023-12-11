@@ -8,6 +8,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ClazImportStatement {
+    public String getImportStatement() {
+        return importStatement;
+    }
+
+    public void setImportStatement(String importStatement) {
+        this.importStatement = importStatement;
+    }
+
     private String importStatement;
 
 

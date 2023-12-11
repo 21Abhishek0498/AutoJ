@@ -42,8 +42,6 @@ public class ParseJavaFile implements ParseFile{
        // resolver.setResolver(file.getName());
         CompilationUnit cu  = StaticJavaParser.parse(file);
         TestClassBuilder testClass = new TestClassBuilder(cu.getType(0).getNameAsString(), cu.getPackageDeclaration().get().getName().asString());
-        log.info("Source class : "+ testClass.getTestClassName());
-        log.info("PackageName : "+ testClass.getPackageName());
         testClass.addImportStatements(ParserUtil.getImportStatementsFromSourceClass(cu));
         testClass.addMethods(getAllMethodOfSourceClass(cu));
         testClass.addClassDependencies(getAllClassDependencies(cu, file.getName()));
@@ -78,7 +76,6 @@ public class ParseJavaFile implements ParseFile{
                                     .accessModifier("")
                                     .returnType(methodDeclaration.getType())
                                     .build();
-                   log.info(method.toString());
                    methodList.add(method);
                      });
         return methodList;
