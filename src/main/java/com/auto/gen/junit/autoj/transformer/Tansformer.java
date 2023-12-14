@@ -27,6 +27,8 @@ public class Tansformer implements TransformerProcessor {
     @Autowired
     private PackageLevelExclusions packageLevelExclusions;
 
+    private int ifCounter =0 ;
+
     /**
      * @param testClassBuilder
      * @return
@@ -47,16 +49,22 @@ public class Tansformer implements TransformerProcessor {
         junitMethod.addMethodToBeTestedParameters(methodToTestParameters);
         classBuilder.addMethod(junitMethod);
         JunitMethod.MockObjects mockObjectsInst = JunitMethod.MockObjects.builder().build();
+        HashMap<String,List<String>> methodMockExpr = whenBlockStatement(methodBlock);
+        buildMockExpr(mockObjectsInst, junitMethod, methodMockExpr);
+      }
+        return classBuilder;
+    }
+
+    private HashMap<String,List<String>> whenBlockStatement(Optional<BlockStmt> methodBlock) {
+        NodeList<Statement> statementList;
+        HashMap<String,List<String>> methodMockExpr = new LinkedHashMap<>();
         if(methodBlock.isPresent()) {
             statementList = methodBlock.get().getStatements();
             for (Statement stmt : statementList) {
-                HashMap<String,List<String>> methodMockExpr = extractExpressionsToBeMocked(stmt);
-                buildMockExpr(mockObjectsInst, junitMethod, methodMockExpr);
+               methodMockExpr.putAll(extractExpressionsToBeMocked(stmt));
             }
         }
-
-      }
-        return classBuilder;
+        return methodMockExpr;
     }
 
     private static MyJunitClass buildJunitClass(TestClassBuilder testClassBuilder) {
@@ -75,7 +83,40 @@ public class Tansformer implements TransformerProcessor {
             Expression expression = stmt.asExpressionStmt().getExpression();
             return extractMethodCallExpr(expression);
         }
+        if (stmt.isIfStmt()) {
+           List<String> ifStatementParams = processIfExprStatement(stmt.asIfStmt().getCondition());
+           System.out.println(ifStatementParams.toString());
+            Map<String,List<String>> map = new HashMap<>();
+            map.put("if_"+ifCounter,ifStatementParams);
+            if(stmt.asIfStmt().hasThenBlock()){
+                map.putAll(whenBlockStatement(Optional.of(stmt.asIfStmt().getThenStmt().asBlockStmt())));
+            }
+        }
         return new HashMap<>();
+    }
+
+    private List<String> processIfExprStatement(Expression expr) {
+        if(expr!=null && expr.isUnaryExpr()){
+            MethodCallExpr methodCallExpr = expr.asUnaryExpr().getExpression().asMethodCallExpr();
+            if(!packageLevelExclusions.isPackageExcluded(methodCallExpr.resolve().getQualifiedSignature()))
+                return List.of(methodCallExpr.toString());
+            return List.of();
+        }
+        else if(expr!=null && expr.isBinaryExpr()){
+          List left =  processIfExprStatement(expr.asBinaryExpr().getLeft());
+          List right =  processIfExprStatement(expr.asBinaryExpr().getRight());
+          List<String> listOfIfStatementsToMock = new ArrayList<>();
+          listOfIfStatementsToMock.addAll(left);
+          listOfIfStatementsToMock.addAll(right);
+          return listOfIfStatementsToMock;
+        }
+        else if(expr!=null && expr.isMethodCallExpr() && !expr.asMethodCallExpr().getArguments().isEmpty()){
+            MethodCallExpr methodCallExpr = expr.asMethodCallExpr();
+            if(!packageLevelExclusions.isPackageExcluded(methodCallExpr.resolve().getQualifiedSignature()))
+                return List.of(methodCallExpr.toString());
+            return List.of();
+        }
+        return List.of();
     }
 
     private HashMap<String,List<String>> extractMethodCallExpr(Expression expression) {
