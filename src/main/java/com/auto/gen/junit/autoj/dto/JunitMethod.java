@@ -1,5 +1,6 @@
 package com.auto.gen.junit.autoj.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -20,11 +21,11 @@ public class JunitMethod {
         this.methodToBeTested = methodToBeTested;
     }
 
-    public Map<String, Class> getMethodToBeTestedParameters() {
+    public List<String> getMethodToBeTestedParameters() {
         return methodToBeTestedParameters;
     }
 
-    public void setMethodToBeTestedParameters(Map<String, Class> methodToBeTestedParameters) {
+    public void setMethodToBeTestedParameters(List<String> methodToBeTestedParameters) {
         this.methodToBeTestedParameters = methodToBeTestedParameters;
     }
 
@@ -37,7 +38,7 @@ public class JunitMethod {
     }
 
     private String methodToBeTested;
-    private Map<String,Class> methodToBeTestedParameters;
+    private List<String> methodToBeTestedParameters;
     private MockObjects mockObjects;
 
     @Builder
@@ -45,8 +46,10 @@ public class JunitMethod {
     @Setter
     @Data
     public static class MockObjects{
+
         private HashMap<String,List<String>>  mockObjectList ;
 
+        @JsonIgnore
         public void addObjectsToMock(HashMap<String,List<String>> statementsToMock){
             if(mockObjectList==null)
                 mockObjectList = new LinkedHashMap<>();
@@ -54,9 +57,11 @@ public class JunitMethod {
         }
 
     }
-    public void addMethodToBeTestedParameters(Map<String,Class> methodToBeTestedParameters){
-        this.methodToBeTestedParameters = new LinkedHashMap<>();
-        this.methodToBeTestedParameters.putAll(methodToBeTestedParameters);
+
+    @JsonIgnore
+    public void addMethodToBeTestedParameters(List<String> methodToBeTestedParameters){
+        this.methodToBeTestedParameters = new LinkedList<>();
+        this.methodToBeTestedParameters.addAll(methodToBeTestedParameters);
     }
 
 }

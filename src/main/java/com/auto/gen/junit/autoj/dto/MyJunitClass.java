@@ -1,12 +1,13 @@
 package com.auto.gen.junit.autoj.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Builder
 @Data
@@ -14,6 +15,16 @@ import java.util.List;
 @Getter
 public class MyJunitClass {
     private String className;
+
+    public String getPreTestConfiguration() {
+        return preTestConfiguration;
+    }
+
+    public void setPreTestConfiguration(String preTestConfiguration) {
+        this.preTestConfiguration = preTestConfiguration;
+    }
+
+    private String preTestConfiguration;
 
     public String getClassName() {
         return className;
@@ -24,21 +35,27 @@ public class MyJunitClass {
     }
 
     private List<JunitMethod> methodList;
-    private List<ClazzDependencies> dependencies;
-    private List<ClazImportStatement> importStatementList;
 
+    private Map<String,String> dependencies;
+    private List<String> importStatementList;
+
+    @JsonIgnore
     public void addMethod(JunitMethod method){
         if(methodList==null)
             methodList  = new LinkedList<>();
         this.methodList.add(method);
     }
 
+    @JsonIgnore
     public void addClassDependencies(List<ClazzDependencies> clazzDependencies){
-        this.dependencies.addAll(clazzDependencies);
+        dependencies = new LinkedHashMap<>();
+        dependencies.putAll(clazzDependencies.stream().collect(Collectors.toMap(ClazzDependencies::getType,ClazzDependencies::getName)));
     }
 
-    public void addImportStatements(List<ClazImportStatement> importStatementList){
-        this.importStatementList.addAll(importStatementList);
+    @JsonIgnore
+    public void addImportStatements(List<ClazImportStatement> importStmtList){
+        importStatementList = new LinkedList<>();
+        importStatementList.addAll(importStmtList.stream().map(imprtStmt -> imprtStmt.getImportStatement()).toList());
     }
 
 
