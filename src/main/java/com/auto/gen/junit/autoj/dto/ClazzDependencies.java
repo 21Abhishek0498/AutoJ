@@ -1,5 +1,6 @@
 package com.auto.gen.junit.autoj.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.javaparser.ast.type.Type;
 import lombok.Builder;
 import lombok.Data;
@@ -25,8 +26,8 @@ public class ClazzDependencies {
         this.name = name;
     }
 
-    public Type getType() {
-        return type;
+    public String getType() {
+        return type.toString();
     }
 
     public void setType(Type type) {
@@ -51,6 +52,7 @@ public class ClazzDependencies {
         this.type = type;
         clazzDependenciesList = new ArrayList<>();
     }*/
+    @JsonIgnore
     public List<Class> getExcludeList(){
         excludeList = new ArrayList<>();
         excludeList.add(String.class);

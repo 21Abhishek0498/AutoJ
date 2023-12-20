@@ -40,12 +40,12 @@ public class Tansformer implements TransformerProcessor {
       MyJunitClass classBuilder = buildJunitClass(testClassBuilder);
       for(Method method : methods){
         Optional<BlockStmt> methodBlock = method.getMethodBody().getMethodBody();
-        Map<String,Class> methodToTestParameters = new LinkedHashMap<>();
-        method.getMethodParameters().stream().map(Parameter::resolve)
+        List<String> methodToTestParameters = new LinkedList<>();
+        methodToTestParameters = method.getMethodParameters().stream().map(Parameter::resolve)
                 .map(ResolvedParameterDeclaration::describeType)
                 .map(String::toString)
-                .forEach(type -> stringToClassResolver.convert(type,methodToTestParameters));
-        JunitMethod junitMethod = JunitMethod.builder().methodToBeTested(method.getMethodName()+"_Test()").build();
+                .collect(Collectors.toList());
+        JunitMethod junitMethod = JunitMethod.builder().methodToBeTested(method.getMethodName()).build();
         junitMethod.addMethodToBeTestedParameters(methodToTestParameters);
         classBuilder.addMethod(junitMethod);
         JunitMethod.MockObjects mockObjectsInst = JunitMethod.MockObjects.builder().build();
@@ -68,9 +68,10 @@ public class Tansformer implements TransformerProcessor {
     }
 
     private static MyJunitClass buildJunitClass(TestClassBuilder testClassBuilder) {
-        return MyJunitClass.builder().className(testClassBuilder.getTestClassName() + "_Test")
-                .importStatementList(testClassBuilder.getImportStatementList())
-                .dependencies(testClassBuilder.getDependencies()).build();
+        MyJunitClass junitTransformer = MyJunitClass.builder().className(testClassBuilder.getTestClassName()).build();
+        junitTransformer.addImportStatements(testClassBuilder.getImportStatementList());
+        junitTransformer.addClassDependencies(testClassBuilder.getDependencies());
+        return junitTransformer;
     }
 
     private void buildMockExpr(JunitMethod.MockObjects mockObjectsInst, JunitMethod junitMethod, HashMap<String,List<String>> methodMockExpr) {
@@ -78,7 +79,7 @@ public class Tansformer implements TransformerProcessor {
         junitMethod.setMockObjects(mockObjectsInst);
     }
 
-    private HashMap<String,List<String>> extractExpressionsToBeMocked(Statement stmt) {
+    private Map<String,List<String>> extractExpressionsToBeMocked(Statement stmt) {
         if (stmt.isExpressionStmt()) {
             Expression expression = stmt.asExpressionStmt().getExpression();
             return extractMethodCallExpr(expression);
@@ -89,8 +90,15 @@ public class Tansformer implements TransformerProcessor {
             Map<String,List<String>> map = new HashMap<>();
             map.put("if_"+ifCounter,ifStatementParams);
             if(stmt.asIfStmt().hasThenBlock()){
-                map.putAll(whenBlockStatement(Optional.of(stmt.asIfStmt().getThenStmt().asBlockStmt())));
+               map.putAll(whenBlockStatement(Optional.of(stmt.asIfStmt().getThenStmt().asBlockStmt())));
             }
+            return map;
+        }
+        if(stmt.isForEachStmt()){
+            return whenBlockStatement(Optional.of(stmt.asForEachStmt().getBody().asBlockStmt()));
+        }
+        if(stmt.isForStmt()){
+            return whenBlockStatement(Optional.of(stmt.asForStmt().getBody().asBlockStmt()));
         }
         return new HashMap<>();
     }
@@ -120,6 +128,10 @@ public class Tansformer implements TransformerProcessor {
     }
 
     private HashMap<String,List<String>> extractMethodCallExpr(Expression expression) {
+       if(expression.isMethodCallExpr() && !packageLevelExclusions.isPackageExcluded(expression.asMethodCallExpr().resolve().getQualifiedSignature())){
+           return processMethodCallExpr(expression.asMethodCallExpr());
+       }
+
        if(expression.isVariableDeclarationExpr() &&
                expression.asVariableDeclarationExpr()
                 .getVariables().get(0).getInitializer().isPresent() &&
