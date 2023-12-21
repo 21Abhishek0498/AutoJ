@@ -24,7 +24,7 @@ public class ClassScannerServiceImpl implements ClassScanner{
     /**
      * Identifies and returns the names of DTOs within the specified package.
      *
-     * here packageName is file path as directory.
+     * here packageName is file path as directory .
      *
      * @param packageName The name of the package to scan.
      * @return A list of DTO class names.
