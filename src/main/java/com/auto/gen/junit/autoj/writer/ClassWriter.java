@@ -93,20 +93,15 @@ public class ClassWriter implements Writer{
 
         ClassName springBootTestClass = ClassName.get("org.springframework.boot.test.context", "SpringBootTest");
         TypeSpec.Builder testClassSpec = TypeSpec.classBuilder(testClasses.getClassName()+"Test");
-        TypeSpec test =  TypeSpec.classBuilder(testClasses.getClassName()).build();
         testClassSpec.addAnnotation(springBootTestClass);
-//
+
         ClassName propertySourceClass = ClassName.get("org.springframework.context.annotation", "PropertySource");
         AnnotationSpec.Builder propertySourceAnnotationBuilder = AnnotationSpec.builder(propertySourceClass);
         propertySourceAnnotationBuilder.addMember("value", "$S", "classpath:/application.properties");
         AnnotationSpec propertySourceAnnotation = propertySourceAnnotationBuilder.build();
         testClassSpec.addAnnotation(propertySourceAnnotation);
 
-//        String className = testClasses.getTestClassName();
-//        Class<?> cls = Class.forName(testClasses.getPackageName());
         ClassName injectMocks = ClassName.get("org.mockito", "InjectMocks");
-
-//           Class<?> loadedClass = Class.forName(testClasses.getClassName());
 
         ClassName classTypeName = ClassName.get("", testClasses.getClassName());
         TypeName typeName = classTypeName;
