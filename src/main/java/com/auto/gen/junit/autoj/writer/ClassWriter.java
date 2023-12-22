@@ -2,30 +2,16 @@ package com.auto.gen.junit.autoj.writer;
 
 import com.auto.gen.junit.autoj.dto.*;
 import com.github.javaparser.ast.body.Parameter;
-import io.jbock.javapoet.JavaFile;
-import io.jbock.javapoet.MethodSpec;
-import io.jbock.javapoet.TypeSpec;
-
-import javax.lang.model.element.Modifier;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.io.File;
-import java.util.Map;
-
 import io.jbock.javapoet.*;
 import org.springframework.stereotype.Service;
 import org.testng.annotations.Test;
 
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AssignableTypeFilter;
+import javax.lang.model.element.Modifier;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -105,10 +91,10 @@ public class ClassWriter implements Writer{
 
         ClassName classTypeName = ClassName.get("", testClasses.getClassName());
         TypeName typeName = classTypeName;
-
         FieldSpec tokenServiceField = FieldSpec.builder(classTypeName, testClasses.getClassName().toLowerCase(), Modifier.PRIVATE)
                 .addAnnotation(injectMocks)
                 .build();
+
         System.out.println("tokenServiceField == "+tokenServiceField.type);
         testClassSpec.addField(tokenServiceField);
 
@@ -122,8 +108,16 @@ public class ClassWriter implements Writer{
             }
         }
         TypeSpec classType = testClassSpec.build();
-        JavaFile javaFile = JavaFile.builder("com.auto.gen.junit.autoj.javapoet", classType)
-                .build();
+        JavaFile.Builder javaFileBuilder = JavaFile.builder("com.auto.gen.junit.autoj.javapoet", classType);
+
+        for(String imports: testClasses.getImportStatementList()){
+//            javaFileBuilder.addStaticImport(imports.getClass());
+            ClassName something = ClassName.get(imports.getClass());
+
+        }
+
+        JavaFile javaFile = javaFileBuilder.build();
+
         File outputDirectory = new File("src/test/java");
         javaFile.writeTo(outputDirectory);
         System.out.println("created classes");
@@ -142,6 +136,7 @@ public class ClassWriter implements Writer{
                 mockStmts.add(String.format("Mockito.when(%s).thenReturn(%s)",entry.getValue().get(0),entry.getValue().get(1)));
             }
         });
+        mockStmts.add(String.format("Mockito.verify(%s())",method.getMethodToBeTested()));
         return mockStmts;
     }
 
