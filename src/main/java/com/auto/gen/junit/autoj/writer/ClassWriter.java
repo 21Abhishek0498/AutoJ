@@ -108,10 +108,10 @@ public class ClassWriter implements Writer{
 
 //           Class<?> loadedClass = Class.forName(testClasses.getClassName());
 
-        ClassName classsssName = ClassName.get("", testClasses.getClassName());
-        TypeName typeName = classsssName;
+        ClassName classType = ClassName.get("", testClasses.getClassName());
+        TypeName typeName = classType;
 
-        FieldSpec tokenServiceField = FieldSpec.builder(classsssName, testClasses.getClassName().toLowerCase(), Modifier.PRIVATE)
+        FieldSpec tokenServiceField = FieldSpec.builder(classType, testClasses.getClassName().toLowerCase(), Modifier.PRIVATE)
                 .addAnnotation(injectMocks)
                 .build();
         System.out.println("tokenServiceField == "+tokenServiceField.type);
