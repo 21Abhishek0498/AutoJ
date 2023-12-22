@@ -55,7 +55,7 @@ public class TranslateToEasyRandom {
         else if(returnType.contains("void") || returnType.contains("Void"))
             return "doNothing()";
         else
-            return "easyRandom.nextObject(Class.forName(returnType));";
+            return "easyRandom.nextObject(Class.forName(returnType))";
     }
 
 

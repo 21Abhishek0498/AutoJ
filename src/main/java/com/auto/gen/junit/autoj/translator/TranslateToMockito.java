@@ -9,4 +9,8 @@ public class TranslateToMockito {
         return "Mockito.anyString()";
     }
 
+    public String getAnyMock(){
+        return "Mockito.any()";
+    }
+
 }

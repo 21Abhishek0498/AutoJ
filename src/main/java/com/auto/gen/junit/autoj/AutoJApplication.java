@@ -9,15 +9,19 @@ import com.auto.gen.junit.autoj.transformer.TransformerProcessor;
 import com.auto.gen.junit.autoj.translator.TranslationManager;
 import com.auto.gen.junit.autoj.type.resolver.StringToClassResolver;
 import com.auto.gen.junit.autoj.validator.intf.SourceCodePathValidator;
-import org.checkerframework.checker.units.qual.A;
+import com.auto.gen.junit.autoj.writer.ClassWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
+
+import static java.nio.file.Files.readAllLines;
 
 @SpringBootApplication
 public class AutoJApplication implements CommandLineRunner {
@@ -43,6 +47,10 @@ public class AutoJApplication implements CommandLineRunner {
 	@Autowired
 	TranslationManager translationManager;
 
+	@Autowired
+	ClassWriter classWriter;
+
+
 	public static void main(String[] args) {
 
 		Class clazz = AutoJApplication.class;
@@ -62,8 +70,9 @@ public class AutoJApplication implements CommandLineRunner {
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			MyJunitClass junitsClassToBeBuild  = transformerProcessor.transform((TestClassBuilder) entry.getValue());
 			commonObjectMapper.toJsonString(junitsClassToBeBuild);
-			System.out.println(commonObjectMapper.toJsonString(junitsClassToBeBuild));
+//			System.out.println(commonObjectMapper.toJsonString(junitsClassToBeBuild));
 			MyJunitClass translatedClass = translationManager.startTranslation(junitsClassToBeBuild);
+			classWriter.writeJavaClass(translatedClass);
 			System.out.println(commonObjectMapper.toJsonString(translatedClass));
 		}
 	}

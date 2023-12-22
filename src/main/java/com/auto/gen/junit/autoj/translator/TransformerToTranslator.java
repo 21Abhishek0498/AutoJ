@@ -42,7 +42,8 @@ public class TransformerToTranslator implements TranslationManager {
                     String mockArgument = testMethodArguments(toMockStatement.get(0));
                     String mockReturnType = testMethodReturnType(toMockStatement.get(1), translateToEasyRandom);
                     List<String> mocks  = new LinkedList<>();
-                    mocks.add(mockArgument);
+                    System.out.println("mockArg = "+thirdPartyClass+"."+mockArgument+" mockReturn = "+mockReturnType);
+                    mocks.add(thirdPartyClass+"."+mockArgument);
                     mocks.add(mockReturnType);
                     toMockMap.replace(key, mocks);
                 }
@@ -74,7 +75,9 @@ public class TransformerToTranslator implements TranslationManager {
 
     private String testMethodArguments(String methodSignature){
         String argumentTypes = methodSignature.substring(methodSignature.indexOf("(")+1, methodSignature.indexOf(")"));
+        System.out.println("argumentTypes =" + argumentTypes);
         String methodName = methodSignature.substring(0, methodSignature.indexOf("("));
+        System.out.println("methodName = "+methodName);
         if(argumentTypes.contains(",")){
             StringBuilder builder = new StringBuilder();
             String [] parameters = argumentTypes.split(",");
@@ -85,7 +88,8 @@ public class TransformerToTranslator implements TranslationManager {
             }
             return methodName + "("+ builder.toString() +")";
         }
-        return mockMethodInvocation(argumentTypes).orElse("No such Type found");
+        Optional<String> mockMethodArgInvoke = mockMethodInvocation(argumentTypes);
+        return mockMethodArgInvoke.map(s -> methodName + "(" + s + ")").orElse(("No such Type found"));
     }
 
     private void setMethodParameters(JunitMethod methods) {
@@ -103,13 +107,11 @@ public class TransformerToTranslator implements TranslationManager {
         Method[] methods = translateToMockito.getClass().getDeclaredMethods();
         Optional<String> mockString = Arrays.stream(methods).filter(method -> method.isAnnotationPresent(Translate.class)).map(method ->
         {
-            try {
-                if(method.getAnnotation(Translate.class).value().equals(annotationValue));
-                return (String) method.invoke(translateToMockito);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
+            System.out.println("annotationValue :: "+annotationValue);
+            if ("com.java.lang.String".contains(annotationValue)) {
+                return (String) translateToMockito.getStringMock();
+            } else {
+                return (String) translateToMockito.getAnyMock();
             }
         }).findAny();
         return mockString;
