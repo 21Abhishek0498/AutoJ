@@ -4,13 +4,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TranslateToMockito {
-    @Translate(value = "com.java.lang.String")
-    public String getStringMock(){
+    @Translate(value = "java.lang.String")
+    public String getStringMock() {
         return "Mockito.anyString()";
     }
 
-    public String getAnyMock(){
+    public String getAnyMock() {
         return "Mockito.any()";
     }
 
+    @Translate(value = "java.lang.Boolean")
+    public String getBooleanMock() {
+        return "Mockito.anyBoolean()";
+    }
 }

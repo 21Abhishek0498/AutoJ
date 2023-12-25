@@ -29,7 +29,7 @@ public class TransformerToTranslator implements TranslationManager {
             List<List<String>> allStatementsTobeMocked = new LinkedList<>();
             String thirdPartyClass = null;
             for (String key : toMockMap.keySet()) {
-                if(key.contains("if"))
+                if (key.contains("if"))
                     continue;
                 if (key.substring(0, key.indexOf("(")).contains("."))
                     thirdPartyClass = key.substring(0, key.indexOf("."));
@@ -41,9 +41,9 @@ public class TransformerToTranslator implements TranslationManager {
                 for (List<String> toMockStatement : allStatementsTobeMocked) {
                     String mockArgument = testMethodArguments(toMockStatement.get(0));
                     String mockReturnType = testMethodReturnType(toMockStatement.get(1), translateToEasyRandom);
-                    List<String> mocks  = new LinkedList<>();
-                    System.out.println("mockArg = "+thirdPartyClass+"."+mockArgument+" mockReturn = "+mockReturnType);
-                    mocks.add(thirdPartyClass+"."+mockArgument);
+                    List<String> mocks = new LinkedList<>();
+                    System.out.println("mockArg = " + thirdPartyClass + "." + mockArgument + " mockReturn = " + mockReturnType);
+                    mocks.add(thirdPartyClass + "." + mockArgument);
                     mocks.add(mockReturnType);
                     toMockMap.replace(key, mocks);
                 }
@@ -63,30 +63,30 @@ public class TransformerToTranslator implements TranslationManager {
             return translateToEasyRandom.getMap(leftChild, rightChild, 0);
         } else if (methodReturnType.startsWith("java.util.Set")) {
             String[] parsedParentStr = methodReturnType.split("<");
-            String type = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">") -1);
+            String type = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">") - 1);
             return translateToEasyRandom.getSet(type, 1);
         } else if (methodReturnType.startsWith("java.util.List")) {
             String[] parsedParentStr = methodReturnType.split("<");
-            String type = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">") -1);
+            String type = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">") - 1);
             return translateToEasyRandom.getSet(type, 1);
         } else
             return translateToEasyRandom.investigate(methodReturnType);
     }
 
-    private String testMethodArguments(String methodSignature){
-        String argumentTypes = methodSignature.substring(methodSignature.indexOf("(")+1, methodSignature.indexOf(")"));
+    private String testMethodArguments(String methodSignature) {
+        String argumentTypes = methodSignature.substring(methodSignature.indexOf("(") + 1, methodSignature.indexOf(")"));
         System.out.println("argumentTypes =" + argumentTypes);
         String methodName = methodSignature.substring(0, methodSignature.indexOf("("));
-        System.out.println("methodName = "+methodName);
-        if(argumentTypes.contains(",")){
+        System.out.println("methodName = " + methodName);
+        if (argumentTypes.contains(",")) {
             StringBuilder builder = new StringBuilder();
-            String [] parameters = argumentTypes.split(",");
-            for(String params : parameters){
-                if(!builder.isEmpty())
+            String[] parameters = argumentTypes.split(",");
+            for (String params : parameters) {
+                if (!builder.isEmpty())
                     builder.append(",");
                 builder.append(mockMethodInvocation(params).orElseThrow());
             }
-            return methodName + "("+ builder.toString() +")";
+            return methodName + "(" + builder.toString() + ")";
         }
         Optional<String> mockMethodArgInvoke = mockMethodInvocation(argumentTypes);
         return mockMethodArgInvoke.map(s -> methodName + "(" + s + ")").orElse(("No such Type found"));
@@ -102,17 +102,19 @@ public class TransformerToTranslator implements TranslationManager {
 
     }
 
-    private Optional<String> mockMethodInvocation(String annotationValue){
+    private Optional<String> mockMethodInvocation(String annotationValue) {
         TranslateToMockito translateToMockito = new TranslateToMockito();
         Method[] methods = translateToMockito.getClass().getDeclaredMethods();
         Optional<String> mockString = Arrays.stream(methods).filter(method -> method.isAnnotationPresent(Translate.class)).map(method ->
         {
-            System.out.println("annotationValue :: "+annotationValue);
-            if ("com.java.lang.String".contains(annotationValue)) {
+            System.out.println("annotationValue :: " + annotationValue);
+            if (annotationValue.contains("java.lang.String")) {
                 return (String) translateToMockito.getStringMock();
-            } else {
-                return (String) translateToMockito.getAnyMock();
-            }
+            } else if (annotationValue.contains("java.land.Boolean")) {
+                return (String) translateToMockito.getBooleanMock();
+            } else{
+            return (String) translateToMockito.getAnyMock();
+        }
         }).findAny();
         return mockString;
     }
