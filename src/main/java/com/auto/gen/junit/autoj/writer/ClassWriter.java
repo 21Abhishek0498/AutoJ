@@ -41,12 +41,12 @@ public class ClassWriter implements Writer{
     }
 
     /**
+     * @param testClassSpec
      * @param fields
      */
     @Override
     public void writeDependencies(TypeSpec.Builder testClassSpec, Map<String,String> fields) {
         ClassName mockDependency = ClassName.get("org.mockito", "Mock");
-
         fields.entrySet().forEach(entry -> {
             System.out.println("key "+entry.getKey()+" value "+entry.getValue());
             ClassName classTypeName = ClassName.get("", entry.getKey());
@@ -94,11 +94,15 @@ public class ClassWriter implements Writer{
         System.out.println("tokenServiceField == "+tokenServiceField.type);
         testClassSpec.addField(tokenServiceField);
 
-        //create dependency method call
-        writeDependencies(testClassSpec, testClasses.getDependencies());
-
-        writeSetupMethod(testClasses, testClassSpec);
-
+        if (!testClasses.getImportStatementList().isEmpty()){
+            writeImports(testClassSpec, testClasses.getImportStatementList());
+        }
+        if (!testClasses.getDependencies().isEmpty()) {
+            writeDependencies(testClassSpec, testClasses.getDependencies());
+        }
+        if (!testClasses.getPreTestConfiguration().isEmpty()) {
+            writeSetupMethod(testClassSpec,testClasses);
+        }
         if (!testClasses.getMethodList().isEmpty()) {
             writeTestMethod(testClassSpec, testClasses.getMethodList(), testClasses.getClassName());
         }
@@ -120,7 +124,7 @@ public class ClassWriter implements Writer{
 
     }
 
-    private void writeSetupMethod(MyJunitClass testClasses, TypeSpec.Builder testClassSpec) {
+    private void writeSetupMethod(TypeSpec.Builder testClassSpec, MyJunitClass testClasses) {
         testClassSpec.addMethod(MethodSpec.methodBuilder("setup")
                 .addAnnotation(BeforeEach.class)
                 .returns(void.class)
