@@ -17,7 +17,6 @@ public class ParserUtil {
 
     public static List<ClazImportStatement> getImportStatementsFromSourceClass(CompilationUnit cu){
         List<ImportDeclaration> importDeclarations = cu.getImports().stream().collect(Collectors.toList());
-        importDeclarations.forEach(System.out::println);
         return importDeclarations.stream().map(importDeclaration -> importDeclaration.getName().asString())
                 .map(e -> ClazImportStatement.builder().importStatement(e).build())
                 .collect(Collectors.toList());

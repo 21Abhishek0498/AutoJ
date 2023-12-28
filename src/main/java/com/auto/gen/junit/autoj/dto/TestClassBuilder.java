@@ -1,5 +1,9 @@
 package com.auto.gen.junit.autoj.dto;
 
+import lombok.Builder;
+import lombok.Data;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +14,18 @@ import lombok.Data;
 @Data
 @Document(collection = "testclass_builder")
 public class TestClassBuilder {
+    public String getTestClassName() {
+        return testClassName;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
     private final String testClassName;
     private List<Method> methodList;
     private List<ClazzDependencies> dependencies;
@@ -28,6 +44,10 @@ public class TestClassBuilder {
 
     public void addClassDependencies(List<ClazzDependencies> clazzDependencies){
         this.dependencies.addAll(clazzDependencies);
+    }
+
+    public void addImportStatements(ClazImportStatement clazImportStatement){
+        this.importStatementList.add(clazImportStatement);
     }
 
     public void addImportStatements(List<ClazImportStatement> importStatementList){

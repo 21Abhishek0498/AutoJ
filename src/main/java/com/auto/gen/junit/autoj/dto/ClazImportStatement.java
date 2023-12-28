@@ -11,6 +11,14 @@ import lombok.Setter;
 @Setter
 @Document(collection = "claz_import_statement")
 public class ClazImportStatement {
+    public String getImportStatement() {
+        return importStatement;
+    }
+
+    public void setImportStatement(String importStatement) {
+        this.importStatement = importStatement;
+    }
+
     private String importStatement;
 
 
