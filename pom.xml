@@ -84,6 +84,11 @@
 			<artifactId>easy-random-core</artifactId>
 			<version>4.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.10.1</version>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
