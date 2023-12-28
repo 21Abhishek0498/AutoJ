@@ -20,7 +20,7 @@
 </head>
 
 <body>
-    <form th:action="@{/autoj/checkPomDependency}" method="POST">
+    <form th:action="@{/autoj/checkPomDependency}" method="get">
         <div class="form-group">
             <label for="pathToPom">Path to pom.xml:</label>
             <input type="text" name="pathToPom" placeholder="Enter File Path" />

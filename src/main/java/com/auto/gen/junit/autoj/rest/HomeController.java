@@ -1,8 +1,8 @@
 package com.auto.gen.junit.autoj.rest;
 
-import org.springframework.web.bind.annotation.RestController;
-
 import com.auto.gen.junit.autoj.service.ServiceImpl;
+
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,11 +22,11 @@ public class HomeController {
 	
 	@GetMapping(value = "/home")
 	public String getHome(Model model) {
-		return "home";	
+		return "home-page";
 	}
 
-	@PostMapping(value="/showCheckPomDependencyForm")
-	public String showCheckPomDependencyForm(Model model) {
+	@GetMapping(value="/showCheckPomDependencyForm")
+	public String showChesckPomDependencyForm(Model model) {
 		return "check-dependency-form";
 	}
 	
@@ -36,10 +36,14 @@ public class HomeController {
 			pathToPom.replace('\\', '/');
 			boolean isDependencyPresent = serviceImpl.isDependencyPresent("org.springframework.boot", "spring-boot-starter-test", pathToPom);
 			if(isDependencyPresent) {
-				model.addAttribute("isDependencyPresent", "Yes. It is Present");
+				model.addAttribute("isDependencyPresent", "Yes. \"spring-boot-starter-test\" dependency is Present");
 			} else {
-				model.addAttribute("isDependencyPresent", "No! It is not Present. Need to Add");
+				model.addAttribute("isDependencyPresent", "No! \"spring-boot-starter-test\" dependency is not Present. Need to Add");
 			}
+			Map<String, String> dependencies = serviceImpl.getJavaVersionAndSpringVersion(pathToPom);
+        	model.addAttribute("javaVersion", dependencies.get("Java Version"));
+        	model.addAttribute("springBootVersion", dependencies.get("Spring Boot Version"));
+        	
 		} catch (Exception e) {
 			model.addAttribute("message", e.getStackTrace().toString());
 		}

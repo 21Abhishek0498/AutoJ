@@ -20,7 +20,12 @@
 </head>
 <body>
 <div th:if="${message != null}">
-	The message is: <span th:text="${message}" />
+	The message is: <span th:text="${message}">
 </div>
-<span th:if="${message == null}" th:text="${isDependencyPresent}" />
+<div th:unless="${message != null}">
+    Is the required Dependency Present = <span th:text="${isDependencyPresent}" />
+    Java Version = <span th:text="${Java Version}" />
+    Spring Boot Version = <span th:text="${springBootVersion}" />
+</div>
+
 </body>
