@@ -4,6 +4,7 @@ import com.auto.gen.junit.autoj.ParserUtil;
 import com.auto.gen.junit.autoj.dto.ClazzDependencies;
 import com.auto.gen.junit.autoj.dto.Method;
 import com.auto.gen.junit.autoj.dto.TestClassBuilder;
+import com.auto.gen.junit.autoj.scanner.ClassScanner;
 import com.auto.gen.junit.autoj.type.resolver.Resolver;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
@@ -33,6 +34,9 @@ public class ParseJavaFile implements ParseFile{
     @Autowired
     private Resolver resolver;
 
+    @Autowired
+    private ClassScanner classScanner;
+
     /**
      * @param file
      * @return
@@ -44,7 +48,11 @@ public class ParseJavaFile implements ParseFile{
         TestClassBuilder testClass = new TestClassBuilder(cu.getType(0).getNameAsString(), cu.getPackageDeclaration().get().getName().asString());
         testClass.addImportStatements(ParserUtil.getImportStatementsFromSourceClass(cu));
         testClass.addMethods(getAllMethodOfSourceClass(cu));
-        testClass.addClassDependencies(getAllClassDependencies(cu, file.getName()));
+        if (file.getName().endsWith(".java")) {
+            if (!classScanner.isDtoOrEntityClass(cu) && !classScanner.isDto(cu, file)) {
+                testClass.addClassDependencies(getAllClassDependencies(cu, file.getName()));
+            }
+        }
         /*cu.findAll(MethodCallExpr.class).forEach(mce ->
                 System.out.println(mce.resolve().getSignature()));*/
         return testClass;
@@ -53,6 +61,7 @@ public class ParseJavaFile implements ParseFile{
     public List<ClazzDependencies> getAllClassDependencies(CompilationUnit cu, String className){
         List<Class> excludeClassDependencies = ClazzDependencies.builder().build().getExcludeList();
         List<ClazzDependencies> clasDependencies = null;
+        System.out.println("className working on now = "+className);
         for (TypeDeclaration<?> classOrInterfaceDeclaration : cu.getTypes()) {
             clasDependencies = classOrInterfaceDeclaration.getFields().stream().filter(fieldDeclaration -> !excludeClassDependencies.contains(fieldDeclaration.getElementType().asClassOrInterfaceType().getClass()))
                     .map(FieldDeclaration::asFieldDeclaration)
