@@ -27,6 +27,35 @@ public class ServiceImpl {
     private Environment env;
 
     /**
+     * Retrieves the latest version of a Maven artifact from the Maven Central Repository.
+     *
+     * @param groupId    The group ID of the artifact.
+     * @param artifactId The artifact ID.
+     * @return The latest version of the artifact.
+     * @throws IOException If an error occurs during the HTTP request.
+     */
+    public static String getLatestVersion(String groupId, String artifactId) throws IOException {
+        String apiUrl = "https://search.maven.org/solrsearch/select?q=g:%22" + groupId + "%22+AND+a:%22" + artifactId + "%22&core=gav&rows=1&wt=json";
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
+        connection.setRequestMethod("GET");
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            StringBuilder response = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            String json = response.toString();
+            int versionStartIndex = json.indexOf("\"v\":\"") + 5;
+            int versionEndIndex = json.indexOf("\"", versionStartIndex);
+            return json.substring(versionStartIndex, versionEndIndex);
+        }
+    }
+
+    /**
      * Retrieves dependency strings from the environment property "custom.dependencies".
      *
      * @return List of dependency strings.
@@ -76,6 +105,7 @@ public class ServiceImpl {
             for (Dependency missingDependency : missingDependencies) {
                 addDependencyToPom(missingDependency, pomFilePath, model);
             }
+
             mavenBuild(pomFilePath);
         } else {
             return "All required dependencies are present in the pom.xml file.";
@@ -154,7 +184,14 @@ public class ServiceImpl {
         request.setGoals(Arrays.asList("clean", "dependency:resolve", "compile"));
 
         Invoker invoker = new DefaultInvoker();
-        invoker.setMavenHome(new File("C:/apache-maven-3.9.6"));
+        // Check if Maven is present in the system
+        String mavenHomePath = System.getenv("M2_HOME");
+        if (mavenHomePath != null) {
+            invoker.setMavenHome(new File(mavenHomePath));
+        } else {
+            // Manually set the Maven home path if not present in the system environment variables
+            invoker.setMavenHome(new File("C:/apache-maven-3.9.6"));
+        }
         InvocationResult result = invoker.execute(request);
 
         if (result.getExitCode() != 0) {
@@ -162,35 +199,6 @@ public class ServiceImpl {
         } else {
             System.out.println("Maven build completed successfully.");
 
-        }
-    }
-
-    /**
-     * Retrieves the latest version of a Maven artifact from the Maven Central Repository.
-     *
-     * @param groupId    The group ID of the artifact.
-     * @param artifactId The artifact ID.
-     * @return The latest version of the artifact.
-     * @throws IOException If an error occurs during the HTTP request.
-     */
-    public static String getLatestVersion(String groupId, String artifactId) throws IOException {
-        String apiUrl = "https://search.maven.org/solrsearch/select?q=g:%22" + groupId + "%22+AND+a:%22" + artifactId + "%22&core=gav&rows=1&wt=json";
-
-        HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
-        connection.setRequestMethod("GET");
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-
-            String json = response.toString();
-            int versionStartIndex = json.indexOf("\"v\":\"") + 5;
-            int versionEndIndex = json.indexOf("\"", versionStartIndex);
-            return json.substring(versionStartIndex, versionEndIndex);
         }
     }
 
@@ -225,5 +233,6 @@ public class ServiceImpl {
             throw new IllegalArgumentException("Invalid dependency string: " + dependencyString);
         }
     }
+
 
 }
