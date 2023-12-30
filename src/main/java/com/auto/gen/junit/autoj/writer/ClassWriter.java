@@ -8,10 +8,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import javax.lang.model.element.Modifier;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @Service
 public class ClassWriter implements Writer {
@@ -62,14 +65,6 @@ public class ClassWriter implements Writer {
         return null;
     }
 
-    /**
-     * @param imports
-     */
-    @Override
-    public void writeImports(List<ClazImportStatement> imports) {
-
-    }
-
     @Override
     public void writeJavaClass(MyJunitClass testClasses) throws Exception {
 
@@ -83,22 +78,24 @@ public class ClassWriter implements Writer {
         AnnotationSpec propertySourceAnnotation = propertySourceAnnotationBuilder.build();
         testClassSpec.addAnnotation(propertySourceAnnotation);
 
-        if(!testClasses.getDependencies().isEmpty()){
-            ClassName injectMocks = ClassName.get("org.mockito", "InjectMocks");
-            ClassName spyMock = ClassName.get("org.mockito", "Spy");
-            ClassName classTypeName = ClassName.get("", testClasses.getClassName());
-            FieldSpec tokenServiceField = FieldSpec.builder(classTypeName, testClasses.getClassName().toLowerCase(), Modifier.PRIVATE)
-                    .addAnnotation(injectMocks)
-                    .addAnnotation(spyMock)
-                    .build();
+        ClassName injectMocks = ClassName.get("org.mockito", "InjectMocks");
+        ClassName spyMock = ClassName.get("org.mockito", "Spy");
+        ClassName classTypeName = ClassName.get("", testClasses.getClassName());
+        FieldSpec tokenServiceField = FieldSpec.builder(classTypeName, testClasses.getClassName().toLowerCase(), Modifier.PRIVATE)
+                .addAnnotation(injectMocks)
+                .addAnnotation(spyMock)
+                .build();
 
-            System.out.println("tokenServiceField == " + tokenServiceField.type);
-            testClassSpec.addField(tokenServiceField);
-        }
+        System.out.println("tokenServiceField == " + tokenServiceField.type);
+        testClassSpec.addField(tokenServiceField);
 
-        if (!testClasses.getImportStatementList().isEmpty()) {
-//            writeImports(testClassSpec, testClasses.getImportStatementList());
-        }
+        ClassName mockDependency = ClassName.get("org.mockito", "Mock");
+        ClassName easyRandomTypeName = ClassName.get("org.jeasy.random.EasyRandom", "EasyRandom" );
+        FieldSpec easyRandomServiceField = FieldSpec.builder(easyRandomTypeName, "easyRandom", Modifier.PRIVATE)
+                .addAnnotation(mockDependency)
+                .build();
+        testClassSpec.addField(easyRandomServiceField);
+
         if (!testClasses.getDependencies().isEmpty()) {
             writeDependencies(testClassSpec, testClasses.getDependencies());
         }
@@ -111,25 +108,52 @@ public class ClassWriter implements Writer {
         TypeSpec classType = testClassSpec.build();
         JavaFile.Builder javaFileBuilder = JavaFile.builder("com.auto.gen.junit.autoj.javapoet", classType);
 
-        for (String imports : testClasses.getImportStatementList()) {
-//            javaFileBuilder.addStaticImport(imports.getClass());
-            System.out.println(imports.getClass());
-            ClassName something = ClassName.get(imports.getClass());
-//            javaFileBuilder.addStaticImport(something);
-//            testClassSpec.
-
+        List<String> importStmts = testClasses.getImportStatementList();
+        StringBuilder importStr = new StringBuilder();
+        if (!importStmts.isEmpty()) {
+            for (String signature : importStmts) {
+                importStr.append(String.format("import %s;\n",signature));
+            }
         }
-//        for(String imports : testClasses.getImportStatementList()){
-//            System.out.println(imports.getClass());
-//            javaFileBuilder.addStaticImport(imports.getClass()); // Import specific static method
-//        }
-
         JavaFile javaFile = javaFileBuilder.build();
 
         File outputDirectory = new File("src/test/java");
+
         javaFile.writeTo(outputDirectory);
+
+        if (!testClasses.getImportStatementList().isEmpty()) {
+            writeImports(testClasses, importStr);
+        }
+
         System.out.println("created classes");
 
+    }
+
+    @Override
+    public void writeImports(MyJunitClass testClasses, StringBuilder importStr) throws IOException {
+        String pckg = "com.auto.gen.junit.autoj.javapoet";
+        String pathStr = pckg.replaceAll("\\.","/");
+        String filePath = "src/test/java/"+pathStr+"/"+ testClasses.getClassName()+"Test.java";
+
+        importStr.append(String.format("import %s.%s;\n",pckg, testClasses.getClassName()));
+        System.out.println("import statment \n" + importStr.toString());
+
+        // Read the existing content of the file
+        List<String> existingLines = Files.readAllLines(Path.of(filePath));
+
+        // Check if the file has at least two lines
+        if (existingLines.size() >= 2) {
+            // Modify the second line by appending the new string
+            String secondLine = existingLines.get(1) + importStr.toString();
+            existingLines.set(1, secondLine);
+
+            // Write the updated content back to the file
+            Files.write(Path.of(filePath), existingLines, StandardOpenOption.WRITE);
+
+            System.out.println("String appended to the second line of the file.");
+        } else {
+            System.out.println("File does not have at least two lines.");
+        }
     }
 
     private void writeSetupMethod(TypeSpec.Builder testClassSpec, MyJunitClass testClasses) {

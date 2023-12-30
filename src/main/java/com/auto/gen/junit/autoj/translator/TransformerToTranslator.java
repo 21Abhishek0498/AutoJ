@@ -62,7 +62,7 @@ public class TransformerToTranslator implements TranslationManager {
         translatedJson.getImportStatementList().add("java.util.Set");
         translatedJson.getImportStatementList().add("java.util.List");
         translatedJson.getImportStatementList().add("org.mockito.Mockito");
-        translatedJson.getImportStatementList().add("org.jeasy.random.EasyRandom");
+//        translatedJson.getImportStatementList().add("org.jeasy.random.EasyRandom");
     }
 
     private String testMethodReturnType(String methodReturnType, TranslateToEasyRandom translateToEasyRandom) {
