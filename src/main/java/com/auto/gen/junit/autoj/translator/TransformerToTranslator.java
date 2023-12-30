@@ -2,10 +2,10 @@ package com.auto.gen.junit.autoj.translator;
 
 import com.auto.gen.junit.autoj.dto.JunitMethod;
 import com.auto.gen.junit.autoj.dto.MyJunitClass;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,6 +22,10 @@ public class TransformerToTranslator implements TranslationManager {
     @Override
     public MyJunitClass startTranslation(MyJunitClass translatedJson) {
         TranslateToEasyRandom translateToEasyRandom = new TranslateToEasyRandom();
+        addMandatoryImports(translatedJson);
+        if(ObjectUtils.isEmpty(translatedJson.getMethodList())){
+            return null;
+        }
         for (JunitMethod methods : translatedJson.getMethodList()) {
             setMethodParameters(methods);
             Map<String, List<String>> toMockMap = methods.getMockObjects().getMockObjectList();
@@ -51,6 +55,14 @@ public class TransformerToTranslator implements TranslationManager {
         }
         translatedJson.setPreTestConfiguration(translateToEasyRandom.getBuildSetUpMethod().getSetUp().toString());
         return translatedJson;
+    }
+
+    private void addMandatoryImports(MyJunitClass translatedJson) {
+        translatedJson.getImportStatementList().add("java.util.Map");
+        translatedJson.getImportStatementList().add("java.util.Set");
+        translatedJson.getImportStatementList().add("java.util.List");
+        translatedJson.getImportStatementList().add("org.mockito.Mockito");
+        translatedJson.getImportStatementList().add("org.jeasy.random.EasyRandom");
     }
 
     private String testMethodReturnType(String methodReturnType, TranslateToEasyRandom translateToEasyRandom) {
