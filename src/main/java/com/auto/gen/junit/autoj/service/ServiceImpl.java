@@ -1,12 +1,12 @@
 package com.auto.gen.junit.autoj.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.shared.invoker.*;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  * Service implementation for handling Maven dependencies and related operations.
  */
 @Service
+@Slf4j
 public class ServiceImpl {
 
     @Autowired
@@ -93,15 +94,14 @@ public class ServiceImpl {
         List<Dependency> missingDependencies = new ArrayList<>();
 
         for (Dependency requiredDependency : requiredDependencies) {
-            boolean isPresent = dependenciesPresent.stream()
-                    .anyMatch(dep -> dep.getGroupId().equals(requiredDependency.getGroupId()));
+            boolean isPresent = dependenciesPresent.stream().anyMatch(dep -> dep.getArtifactId().equals(requiredDependency.getArtifactId()));
             if (!isPresent) {
                 missingDependencies.add(requiredDependency);
             }
         }
 
         if (!missingDependencies.isEmpty()) {
-            System.out.println("The following dependencies are missing in the pom.xml file:");
+            log.info("The following dependencies are missing in the pom.xml file:");
             for (Dependency missingDependency : missingDependencies) {
                 addDependencyToPom(missingDependency, pomFilePath, model);
             }
@@ -121,7 +121,7 @@ public class ServiceImpl {
      * @param model      The POM model to be updated.
      * @throws Exception If an error occurs during the operation.
      */
-    public void addDependencyToPom(Dependency dependency, String path, @NotNull Model model) throws Exception {
+    public void addDependencyToPom(Dependency dependency, String path, Model model) throws Exception {
         if (StringUtils.isNotEmpty(dependency.getVersion())) {
             dependency.setVersion(getLatestVersion(dependency.getGroupId(), dependency.getArtifactId()));
         }
@@ -197,7 +197,7 @@ public class ServiceImpl {
         if (result.getExitCode() != 0) {
             throw new MavenInvocationException("Maven build failed with exit code: " + result.getExitCode(), result.getExecutionException());
         } else {
-            System.out.println("Maven build completed successfully.");
+            log.info("Maven build completed successfully.");
 
         }
     }
@@ -222,17 +222,13 @@ public class ServiceImpl {
      */
     private Dependency convertStringToDependency(String dependencyString) {
         String[] parts = dependencyString.split(":");
-        if (parts.length == 3) {
-            Dependency dependency = new Dependency();
-            dependency.setGroupId(parts[0]);
-            dependency.setArtifactId(parts[1]);
-            dependency.setVersion(parts[2]);
+        Dependency dependency = new Dependency();
+        dependency.setGroupId(parts[0]);
+        dependency.setArtifactId(parts[1]);
+        dependency.setVersion(StringUtils.defaultIfBlank(parts[2], null));
+        dependency.setScope(StringUtils.defaultIfBlank(parts[3], null));
 
-            return dependency;
-        } else {
-            throw new IllegalArgumentException("Invalid dependency string: " + dependencyString);
-        }
+        return dependency;
     }
-
 
 }
