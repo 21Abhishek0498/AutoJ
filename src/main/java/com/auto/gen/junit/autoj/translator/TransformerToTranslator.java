@@ -79,7 +79,7 @@ public class TransformerToTranslator implements TranslationManager {
             return translateToEasyRandom.getSet(type, 1);
         } else if (methodReturnType.startsWith("java.util.List")) {
             String[] parsedParentStr = methodReturnType.split("<");
-            String type = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">") - 1);
+            String type = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">"));
             return translateToEasyRandom.getSet(type, 1);
         } else
             return translateToEasyRandom.investigate(methodReturnType);
