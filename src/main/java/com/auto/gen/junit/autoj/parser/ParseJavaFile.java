@@ -48,7 +48,10 @@ public class ParseJavaFile implements ParseFile{
         TestClassBuilder testClass = new TestClassBuilder(cu.getType(0).getNameAsString(), cu.getPackageDeclaration().get().getName().asString());
         testClass.addImportStatements(ParserUtil.getImportStatementsFromSourceClass(cu));
         testClass.addMethods(getAllMethodOfSourceClass(cu));
+        testClass.setPackageName(cu.getPackageDeclaration().get().getName().asString());
+        testClass.setClassDirectoryPath(file.getPath());
         if (file.getName().endsWith(".java")) {
+            //need to change this for DTOs. Maybe add variable names for DTO along with its data type
             if (!classScanner.isDtoOrEntityClass(cu) && !classScanner.isDto(cu, file)) {
                 testClass.addClassDependencies(getAllClassDependencies(cu, file.getName()));
             }

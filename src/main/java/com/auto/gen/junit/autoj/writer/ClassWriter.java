@@ -66,7 +66,7 @@ public class ClassWriter implements Writer {
     }
 
     @Override
-    public void writeJavaClass(MyJunitClass testClasses) throws Exception {
+    public void writeJavaClass(MyJunitClass testClasses, boolean isDtoFlag) throws Exception {
 
         ClassName springBootTestClass = ClassName.get("org.springframework.boot.test.context", "SpringBootTest");
         TypeSpec.Builder testClassSpec = TypeSpec.classBuilder(testClasses.getClassName() + "Test");
@@ -90,7 +90,7 @@ public class ClassWriter implements Writer {
         testClassSpec.addField(tokenServiceField);
 
         ClassName mockDependency = ClassName.get("org.mockito", "Mock");
-        ClassName easyRandomTypeName = ClassName.get("org.jeasy.random.EasyRandom", "EasyRandom" );
+        ClassName easyRandomTypeName = ClassName.get("org.jeasy.random", "EasyRandom");
         FieldSpec easyRandomServiceField = FieldSpec.builder(easyRandomTypeName, "easyRandom", Modifier.PRIVATE)
                 .addAnnotation(mockDependency)
                 .build();
@@ -100,7 +100,11 @@ public class ClassWriter implements Writer {
             writeDependencies(testClassSpec, testClasses.getDependencies());
         }
         if (!testClasses.getPreTestConfiguration().isEmpty()) {
-            writeSetupMethod(testClassSpec, testClasses);
+            if (isDtoFlag) {
+                writeDtoSetupMethod(testClassSpec, testClasses, classTypeName);
+            } else {
+                writeSetupMethod(testClassSpec, testClasses);
+            }
         }
         if (!testClasses.getMethodList().isEmpty()) {
             writeTestMethod(testClassSpec, testClasses.getMethodList(), testClasses.getClassName());
@@ -112,7 +116,7 @@ public class ClassWriter implements Writer {
         StringBuilder importStr = new StringBuilder();
         if (!importStmts.isEmpty()) {
             for (String signature : importStmts) {
-                importStr.append(String.format("import %s;\n",signature));
+                importStr.append(String.format("import %s;\n", signature));
             }
         }
         JavaFile javaFile = javaFileBuilder.build();
@@ -129,14 +133,29 @@ public class ClassWriter implements Writer {
 
     }
 
+    private void writeDtoSetupMethod(TypeSpec.Builder testClassSpec, MyJunitClass testClasses, ClassName classTypeName) {
+        testClassSpec.addMethod(MethodSpec.methodBuilder("setup")
+                .addAnnotation(BeforeEach.class)
+                .returns(void.class)
+                .addStatement(String.join(";\n", createDtoSetupMethod(classTypeName)))
+                .build());
+    }
+
+    private String createDtoSetupMethod(ClassName classTypeName) {
+        System.out.println("CLASSNAME = "+classTypeName.toString());
+        String stmt = String.format("%s dtoClassInstance = new %s()",classTypeName.toString(), classTypeName.toString());
+//        System.out.println("setupStatement = " + setupStatement);
+        return stmt;
+    }
+
     @Override
     public void writeImports(MyJunitClass testClasses, StringBuilder importStr) throws IOException {
         String pckg = "com.auto.gen.junit.autoj.javapoet";
-        String pathStr = pckg.replaceAll("\\.","/");
-        String filePath = "src/test/java/"+pathStr+"/"+ testClasses.getClassName()+"Test.java";
+        String pathStr = pckg.replaceAll("\\.", "/");
+        String filePath = "src/test/java/" + pathStr + "/" + testClasses.getClassName() + "Test.java";
 
-        importStr.append(String.format("import %s.%s;\n",pckg, testClasses.getClassName()));
-        System.out.println("import statment \n" + importStr.toString());
+        importStr.append(String.format("import %s.%s;\n", pckg, testClasses.getClassName()));
+//        System.out.println("import statment \n" + importStr.toString());
 
         // Read the existing content of the file
         List<String> existingLines = Files.readAllLines(Path.of(filePath));
@@ -168,7 +187,7 @@ public class ClassWriter implements Writer {
         String modifiedString = preTestConfiguration.replaceAll("\n", "");
         String[] testConfig = modifiedString.split(";");
         String setupStatement = String.join(";\n var ", testConfig);
-        System.out.println("setupStatement = " + setupStatement);
+//        System.out.println("setupStatement = " + setupStatement);
         return setupStatement;
     }
 

@@ -34,9 +34,11 @@ public class ClassScannerServiceImpl implements ClassScanner{
     public List<String> dtoIdentifier(String packageName) throws FileNotFoundException {
         List<String> classes = processDirectory(packageName);
 
-        log.info("Classes:");
+//        log.info("Classes:");
+        System.out.println("Classes: ");
         for (String clazz : classes) {
-            log.info(clazz);
+//            log.info(clazz);
+            System.out.println(clazz);
         }
         return classes;
     }
@@ -105,7 +107,8 @@ public class ClassScannerServiceImpl implements ClassScanner{
                     return true;
                 }
 
-                log.info("Field name: " + fieldName);
+//                log.info("Field name: " + fieldName);
+                System.out.println("Field name: " + fieldName);
             }
 
             return false;

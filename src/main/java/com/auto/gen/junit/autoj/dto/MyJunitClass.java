@@ -39,6 +39,16 @@ public class MyJunitClass {
     private Map<String,String> dependencies;
     private List<String> importStatementList;
 
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    private String packageName;
+
     @JsonIgnore
     public void addMethod(JunitMethod method){
         if(methodList==null)

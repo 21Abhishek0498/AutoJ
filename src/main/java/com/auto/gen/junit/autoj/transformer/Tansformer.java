@@ -68,7 +68,7 @@ public class Tansformer implements TransformerProcessor {
     }
 
     private static MyJunitClass buildJunitClass(TestClassBuilder testClassBuilder) {
-        MyJunitClass junitTransformer = MyJunitClass.builder().className(testClassBuilder.getTestClassName()).build();
+        MyJunitClass junitTransformer = MyJunitClass.builder().className(testClassBuilder.getTestClassName()).packageName(testClassBuilder.getPackageName()).build();
         junitTransformer.addImportStatements(testClassBuilder.getImportStatementList());
         junitTransformer.addClassDependencies(testClassBuilder.getDependencies());
         return junitTransformer;
