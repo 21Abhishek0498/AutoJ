@@ -132,7 +132,7 @@ public class TransformerToTranslator implements TranslationManager {
             int indexRight = rightChild.lastIndexOf(".");
             String dataTypeLeftStr = leftChild.substring(indexLeft+1);
             String dataTypeRightStr = rightChild.substring(indexRight+1);
-            return Optional.of(dataType.append("Map.of(").append(dataTypeLeftStr).append(".class,").append(dataTypeRightStr).append(".class)").toString());
+            return Optional.of(dataType.append("Map.of(easyRandom.nextObject(").append(dataTypeLeftStr).append(".class),easyRandom.nextObject(").append(dataTypeRightStr).append(".class))").toString());
         } else if (fieldDataType.startsWith("java.util.Set")) {
             String[] parsedParentStr = fieldDataType.split("<");
             String type = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">") - 1);
