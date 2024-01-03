@@ -79,6 +79,7 @@ public class ClassScannerServiceImpl implements ClassScanner{
      * @return {@code true} if the class or interface is annotated with {@code @Entity} or {@code @Getter},
      * {@code false} otherwise.
      */
+    @Override
     public boolean isDtoOrEntityClass(CompilationUnit cu) {
         return cu.findAll(ClassOrInterfaceDeclaration.class)
                 .stream()
@@ -92,6 +93,7 @@ public class ClassScannerServiceImpl implements ClassScanner{
      * @param file The File object representing the Java source file.
      * @return {@code true} if the class is identified as a DTO, {@code false} otherwise.
      */
+    @Override
     public boolean isDto(CompilationUnit cu, File file) {
         Optional<ClassOrInterfaceDeclaration> classOptional = cu.getClassByName(file.getName().replace(".java", ""));
         if (classOptional.isPresent()) {
