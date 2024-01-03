@@ -17,6 +17,9 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Service implementation for handling Maven dependencies and related operations.
+ */
 @Service
 @Slf4j
 public class ServiceImpl {
@@ -93,6 +96,7 @@ public class ServiceImpl {
         for (Dependency requiredDependency : requiredDependencies) {
             boolean isPresent = dependenciesPresent.stream()
                     .anyMatch(dep -> dep.getArtifactId().equals(requiredDependency.getArtifactId()));
+
             if (!isPresent) {
                 missingDependencies.add(requiredDependency);
             }
