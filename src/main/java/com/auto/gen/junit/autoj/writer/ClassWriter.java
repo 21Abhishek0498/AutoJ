@@ -8,13 +8,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import javax.lang.model.element.Modifier;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @Service
-public class ClassWriter implements Writer{
+public class ClassWriter implements Writer {
 
     /**
      * @param testClassSpec
@@ -28,13 +31,13 @@ public class ClassWriter implements Writer{
             testClassSpec.addMethod(MethodSpec.methodBuilder(method.getMethodToBeTested() + "Test")
                     .addAnnotation(Test.class)
                     .returns(void.class)
-                    .addStatement(String.join(";\n",createMockStmts(method,testClassName)))
+                    .addStatement(String.join(";\n", createMockStmts(method, testClassName)))
                     .build());
         }
     }
 
-    private MethodSpec.Builder addMethodParameters(List<Parameter> parameters, MethodSpec.Builder methodBuilder){
-        for(Parameter params : parameters){
+    private MethodSpec.Builder addMethodParameters(List<Parameter> parameters, MethodSpec.Builder methodBuilder) {
+        for (Parameter params : parameters) {
             methodBuilder.addParameter(params.getClass(), params.getName().asString());
         }
         return methodBuilder;
@@ -45,10 +48,10 @@ public class ClassWriter implements Writer{
      * @param fields
      */
     @Override
-    public void writeDependencies(TypeSpec.Builder testClassSpec, Map<String,String> fields) {
+    public void writeDependencies(TypeSpec.Builder testClassSpec, Map<String, String> fields) {
         ClassName mockDependency = ClassName.get("org.mockito", "Mock");
         fields.entrySet().forEach(entry -> {
-            System.out.println("key "+entry.getKey()+" value "+entry.getValue());
+            System.out.println("key " + entry.getKey() + " value " + entry.getValue());
             ClassName classTypeName = ClassName.get("", entry.getKey());
             FieldSpec tokenServiceField = FieldSpec.builder(classTypeName, entry.getValue(), Modifier.PRIVATE)
                     .addAnnotation(mockDependency)
@@ -58,23 +61,15 @@ public class ClassWriter implements Writer{
     }
 
     private String createDependencyStatement(Map<String, String> fields) {
-        System.out.println("fields value "+fields);
+        System.out.println("fields value " + fields);
         return null;
-    }
-
-    /**
-     * @param imports
-     */
-    @Override
-    public void writeImports(List<ClazImportStatement> imports) {
-
     }
 
     @Override
     public void writeJavaClass(MyJunitClass testClasses) throws Exception {
 
         ClassName springBootTestClass = ClassName.get("org.springframework.boot.test.context", "SpringBootTest");
-        TypeSpec.Builder testClassSpec = TypeSpec.classBuilder(testClasses.getClassName()+"Test");
+        TypeSpec.Builder testClassSpec = TypeSpec.classBuilder(testClasses.getClassName() + "Test");
         testClassSpec.addAnnotation(springBootTestClass);
 
         ClassName propertySourceClass = ClassName.get("org.springframework.context.annotation", "PropertySource");
@@ -91,17 +86,21 @@ public class ClassWriter implements Writer{
                 .addAnnotation(spyMock)
                 .build();
 
-        System.out.println("tokenServiceField == "+tokenServiceField.type);
+        System.out.println("tokenServiceField == " + tokenServiceField.type);
         testClassSpec.addField(tokenServiceField);
 
-        if (!testClasses.getImportStatementList().isEmpty()){
-            writeImports(testClassSpec, testClasses.getImportStatementList());
-        }
+        ClassName mockDependency = ClassName.get("org.mockito", "Mock");
+        ClassName easyRandomTypeName = ClassName.get("org.jeasy.random.EasyRandom", "EasyRandom" );
+        FieldSpec easyRandomServiceField = FieldSpec.builder(easyRandomTypeName, "easyRandom", Modifier.PRIVATE)
+                .addAnnotation(mockDependency)
+                .build();
+        testClassSpec.addField(easyRandomServiceField);
+
         if (!testClasses.getDependencies().isEmpty()) {
             writeDependencies(testClassSpec, testClasses.getDependencies());
         }
         if (!testClasses.getPreTestConfiguration().isEmpty()) {
-            writeSetupMethod(testClassSpec,testClasses);
+            writeSetupMethod(testClassSpec, testClasses);
         }
         if (!testClasses.getMethodList().isEmpty()) {
             writeTestMethod(testClassSpec, testClasses.getMethodList(), testClasses.getClassName());
@@ -109,34 +108,67 @@ public class ClassWriter implements Writer{
         TypeSpec classType = testClassSpec.build();
         JavaFile.Builder javaFileBuilder = JavaFile.builder("com.auto.gen.junit.autoj.javapoet", classType);
 
-        for(String imports: testClasses.getImportStatementList()){
-//            javaFileBuilder.addStaticImport(imports.getClass());
-            ClassName something = ClassName.get(imports.getClass());
-//            testClassSpec.
-
+        List<String> importStmts = testClasses.getImportStatementList();
+        StringBuilder importStr = new StringBuilder();
+        if (!importStmts.isEmpty()) {
+            for (String signature : importStmts) {
+                importStr.append(String.format("import %s;\n",signature));
+            }
         }
-
         JavaFile javaFile = javaFileBuilder.build();
 
         File outputDirectory = new File("src/test/java");
+
         javaFile.writeTo(outputDirectory);
+
+        if (!testClasses.getImportStatementList().isEmpty()) {
+            writeImports(testClasses, importStr);
+        }
+
         System.out.println("created classes");
 
+    }
+
+    @Override
+    public void writeImports(MyJunitClass testClasses, StringBuilder importStr) throws IOException {
+        String pckg = "com.auto.gen.junit.autoj.javapoet";
+        String pathStr = pckg.replaceAll("\\.","/");
+        String filePath = "src/test/java/"+pathStr+"/"+ testClasses.getClassName()+"Test.java";
+
+        importStr.append(String.format("import %s.%s;\n",pckg, testClasses.getClassName()));
+        System.out.println("import statment \n" + importStr.toString());
+
+        // Read the existing content of the file
+        List<String> existingLines = Files.readAllLines(Path.of(filePath));
+
+        // Check if the file has at least two lines
+        if (existingLines.size() >= 2) {
+            // Modify the second line by appending the new string
+            String secondLine = existingLines.get(1) + importStr.toString();
+            existingLines.set(1, secondLine);
+
+            // Write the updated content back to the file
+            Files.write(Path.of(filePath), existingLines, StandardOpenOption.WRITE);
+
+            System.out.println("String appended to the second line of the file.");
+        } else {
+            System.out.println("File does not have at least two lines.");
+        }
     }
 
     private void writeSetupMethod(TypeSpec.Builder testClassSpec, MyJunitClass testClasses) {
         testClassSpec.addMethod(MethodSpec.methodBuilder("setup")
                 .addAnnotation(BeforeEach.class)
                 .returns(void.class)
-                .addStatement(String.join(";\n",createSetupMethod(testClasses.getPreTestConfiguration())))
+                .addStatement(String.join(";\n", createSetupMethod(testClasses.getPreTestConfiguration())))
                 .build());
     }
 
     private String createSetupMethod(String preTestConfiguration) {
-        String modifiedString = preTestConfiguration.replaceAll("\n","");
+        String modifiedString = preTestConfiguration.replaceAll("\n", "");
         String[] testConfig = modifiedString.split(";");
         String setupStatement = String.join(";\n var ", testConfig);
-        System.out.println("setupStatement = "+setupStatement);
+        System.out.println("setupStatement = " + setupStatement);
         return setupStatement;
     }
 
@@ -144,15 +176,15 @@ public class ClassWriter implements Writer{
         Map<String, List<String>> mockStmtList = method.getMockObjects().getMockObjectList();
         List<String> mockStmts = new ArrayList<>();
         mockStmtList.entrySet().stream().filter(entry -> (!entry.getValue().isEmpty() && !entry.getKey().contains("_") && !entry.getValue().get(0).contains(className))).forEach(entry -> {
-            System.out.println("key "+entry.getKey()+" value "+entry.getValue());
-            if(entry.getValue().get(1).contains("doNothing()")){
-                mockStmts.add(String.format("Mockito.%s.when(%s)",entry.getValue().get(1),entry.getValue().get(0)));
-            } else{
-                mockStmts.add(String.format("Mockito.when(%s).thenReturn(%s)",entry.getValue().get(0),entry.getValue().get(1)));
+            System.out.println("key " + entry.getKey() + " value " + entry.getValue());
+            if (entry.getValue().get(1).contains("doNothing()")) {
+                mockStmts.add(String.format("Mockito.%s.when(%s)", entry.getValue().get(1), entry.getValue().get(0)));
+            } else {
+                mockStmts.add(String.format("Mockito.when(%s).thenReturn(%s)", entry.getValue().get(0), entry.getValue().get(1)));
             }
         });
-        mockStmts.add(String.format("%s()",method.getMethodToBeTested()));
-        mockStmts.add(String.format("Mockito.verify(%s())",method.getMethodToBeTested()));
+        mockStmts.add(String.format("%s()", method.getMethodToBeTested()));
+        mockStmts.add(String.format("Mockito.verify(%s())", method.getMethodToBeTested()));
         return mockStmts;
     }
 

@@ -31,7 +31,7 @@ public class ClassScannerServiceImpl implements ClassScanner{
      * @throws IllegalArgumentException If the specified directory is not found.
      */
     @Override
-    public List<String> dtoIdentifier(String packageName) throws FileNotFoundException{
+    public List<String> dtoIdentifier(String packageName) throws FileNotFoundException {
         List<String> classes = processDirectory(packageName);
 
         log.info("Classes:");
@@ -41,7 +41,7 @@ public class ClassScannerServiceImpl implements ClassScanner{
         return classes;
     }
 
-    private List<String> processDirectory(String packageName) throws FileNotFoundException{
+    private List<String> processDirectory(String packageName) throws FileNotFoundException {
         List<String> classes = new ArrayList<>();
         File directory = new File(packageName);
 
@@ -77,7 +77,7 @@ public class ClassScannerServiceImpl implements ClassScanner{
      * @return {@code true} if the class or interface is annotated with {@code @Entity} or {@code @Getter},
      * {@code false} otherwise.
      */
-    private boolean isDtoOrEntityClass(CompilationUnit cu) {
+    public boolean isDtoOrEntityClass(CompilationUnit cu) {
         return cu.findAll(ClassOrInterfaceDeclaration.class)
                 .stream()
                 .anyMatch(c -> c.isAnnotationPresent("Entity") || c.isAnnotationPresent("Getter"));

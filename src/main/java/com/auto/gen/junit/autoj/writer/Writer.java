@@ -17,7 +17,7 @@ public interface Writer {
 
     void writeDependencies(TypeSpec.Builder testClassSpec, Map<String,String> fields);
 
-    void writeImports(List<ClazImportStatement> imports);
+    void writeImports(MyJunitClass testClasses, StringBuilder importStr) throws IOException;
 
     void writeJavaClass(MyJunitClass testClasses) throws Exception;
 }
