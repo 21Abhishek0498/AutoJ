@@ -122,7 +122,7 @@ public class TransformerToTranslator implements TranslationManager {
             System.out.println("annotationValue :: " + annotationValue);
             if (annotationValue.contains("java.lang.String")) {
                 return (String) translateToMockito.getStringMock();
-            } else if (annotationValue.contains("java.land.Boolean")) {
+            } else if (annotationValue.contains("java.lang.Boolean")) {
                 return (String) translateToMockito.getBooleanMock();
             } else{
             return (String) translateToMockito.getAnyMock();
