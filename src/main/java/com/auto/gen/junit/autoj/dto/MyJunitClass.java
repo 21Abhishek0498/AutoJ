@@ -59,7 +59,7 @@ public class MyJunitClass {
     @JsonIgnore
     public void addClassDependencies(List<ClazzDependencies> clazzDependencies){
         dependencies = new LinkedHashMap<>();
-        dependencies.putAll(clazzDependencies.stream().collect(Collectors.toMap(ClazzDependencies::getType,ClazzDependencies::getName)));
+        dependencies.putAll(clazzDependencies.stream().collect(Collectors.toMap(ClazzDependencies::getType,ClazzDependencies::getName, (s, a) -> s + "," + a)));
     }
 
     @JsonIgnore

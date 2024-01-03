@@ -72,8 +72,8 @@ public class AutoJApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         boolean isDtoFlag = false;
         //validatePath(args);
-        Map<String, Object> map = generator.generate("src/main/java/com/auto/gen/junit/autoj/dto");
-//		Map<String,Object> map = generator.generate("src/main/java/com/auto/gen/junit/autoj/parser/ParseJavaFile.java", "test");
+//        Map<String, Object> map = generator.generate("src/main/java/com/auto/gen/junit/autoj/dto");
+		Map<String,Object> map = generator.generate("src/main/java/com/auto/gen/junit/autoj/dto/MyJunitClass.java", "test");
         //TestClassBuilder testClassBuilder = parseFile.startParsing(new File("src/main/java/com/auto/gen/junit/autoj/AutoJApplication.java"));
 
 
@@ -82,28 +82,24 @@ public class AutoJApplication implements CommandLineRunner {
 //			return;
 //		}
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            System.out.println("entry key === " + entry.getKey());
-            System.out.println("entry value === " + entry.getValue());
             TestClassBuilder testClassBuilder = (TestClassBuilder) entry.getValue();
             String packageStr = testClassBuilder.getPackageName().replaceAll("\\.", "/");
 //            List<String> classList = classScanner.dtoIdentifier(packageStr);
 //            classList.forEach(System.out::println);
 
-            System.out.println("testClassBuilder.getClassDirectoryPath()) ==== "+testClassBuilder.getClassDirectoryPath());
             File file = new File(testClassBuilder.getClassDirectoryPath());
             CompilationUnit cu = StaticJavaParser.parse(file);
 
             if (file.getName().endsWith(".java")) {
                 if (classScanner.isDtoOrEntityClass(cu) || classScanner.isDto(cu, file)) {
                     isDtoFlag = true;
-                    System.out.println("DTO MIL GAYA!!!");
                 }
             }
 
             MyJunitClass junitsClassToBeBuild = transformerProcessor.transform((TestClassBuilder) entry.getValue());
             commonObjectMapper.toJsonString(junitsClassToBeBuild);
             System.out.println("TRANSFORMED JSON ==== " + commonObjectMapper.toJsonString(junitsClassToBeBuild));
-            MyJunitClass translatedClass = translationManager.startTranslation(junitsClassToBeBuild);
+            MyJunitClass translatedClass = translationManager.startTranslation(junitsClassToBeBuild, isDtoFlag);
             if (ObjectUtils.isNotEmpty(translatedClass)) {
                 System.out.println("TRANSLATED JSON ==== " + commonObjectMapper.toJsonString(translatedClass));
                 classWriter.writeJavaClass(translatedClass, isDtoFlag);

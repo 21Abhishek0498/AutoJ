@@ -1,8 +1,6 @@
 package com.auto.gen.junit.autoj.dto;
 
-import lombok.Builder;
 import lombok.Data;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
