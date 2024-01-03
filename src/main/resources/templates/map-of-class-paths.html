@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assertion Aces</title>
+
+
+  <!-- Vendor CSS Files -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="vendor/aos/aos.css" rel="stylesheet">
+  <link href="vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="css/main.css" rel="stylesheet">
+</head>
+<body>
+<header id="header" class="header d-flex align-items-center">
+  <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+    <nav id="navbar" class="navbar">
+      <ul>
+        <li><a href="/home">Back To Home</a></li>
+        <li><a href="/TestClassList.html">Back To Previous Menu</a></li>
+      </ul>
+    </nav><!-- .navbar -->
+
+    <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
+    <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+
+  </div>
+</header><!-- End Header -->
+
+<h2>Please choose the class to generate JUnits : </h2>
+
+<form th:action="@{/generate-tests}" method="post" id="checkboxForm">
+  <ul th:each="entry : ${mapValues}">
+    <li>
+      <label>
+        <input type="checkbox" class="keyCheckbox" th:name="selectedKeys" th:value="${entry.value}" />
+        <span th:text="${entry.key}"></span>
+      </label>
+    </li>
+  </ul>
+  <input type="hidden" id="selectedKeysInput" th:name="selectedKeysInput" />
+  <button type="submit" class="btn btn-dark">Generate Tests</button>
+</form>
+
+<script th:inline="javascript">
+    /* <![CDATA[ */
+    document.addEventListener('DOMContentLoaded', function () {
+        var checkboxes = document.querySelectorAll('.keyCheckbox');
+
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                updateSelectedValues();
+            });
+        });
+
+        function updateSelectedValues() {
+            var selectedKeys = Array.from(checkboxes)
+                .filter(function (checkbox) {
+                    return checkbox.checked;
+                })
+                .map(function (checkbox) {
+                    return checkbox.value;
+                });
+
+            // Set the selected keys as a comma-separated string to a hidden input
+            document.getElementById('selectedKeysInput').value = selectedKeys.join(',');
+        }
+    });
+    /* ]]> */
+</script>
+</body>
+</html>
