@@ -108,6 +108,10 @@ public class ClassWriter implements Writer {
             writeSetupMethod(testClassSpec, testClasses);
         }
         if (!testClasses.getMethodList().isEmpty()) {
+            FieldSpec dtoClassInstance = FieldSpec.builder(classTypeName, "dtoClassInstance")
+                    .initializer(String.format("easyRandom.nextObject(%s.class)", classTypeName))
+                    .build();
+            testClassSpec.addField(dtoClassInstance);
             if (isDtoFlag) {
                 FieldSpec dtoClassInstance = FieldSpec.builder(classTypeName, "dtoClassInstance")
                         .initializer(String.format("easyRandom.nextObject(%s.class)", classTypeName))
@@ -245,8 +249,8 @@ public class ClassWriter implements Writer {
                 mockStmts.add(String.format("Mockito.when(%s).thenReturn(%s)", entry.getValue().get(0), entry.getValue().get(1)));
             }
         });
-        mockStmts.add(String.format("%s()", method.getMethodToBeTested()));
-        mockStmts.add(String.format("Mockito.verify(%s())", method.getMethodToBeTested()));
+        mockStmts.add(String.format("%s.%s(%s)", className.toLowerCase(), method.getMethodToBeTested(), method.getMethodToBeTestedParameters()));
+        mockStmts.add(String.format("Mockito.verify(%s.%s(%s))", className.toLowerCase(), method.getMethodToBeTested(), method.getMethodToBeTestedParameters()));
         return mockStmts;
     }
 
