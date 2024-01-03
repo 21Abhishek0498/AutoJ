@@ -1,8 +1,8 @@
 package com.auto.gen.junit.autoj.scanner;
 
 import java.io.FileNotFoundException;
-import java.util.List;
+import java.util.Map;
 
 public interface ClassScanner {
-    List<String> dtoIdentifier(String packageName) throws FileNotFoundException, ClassNotFoundException;
+    Map<String, String> dtoIdentifier(String packageName) throws FileNotFoundException, ClassNotFoundException;
 }

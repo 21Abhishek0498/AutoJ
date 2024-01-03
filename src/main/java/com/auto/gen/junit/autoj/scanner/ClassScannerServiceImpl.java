@@ -10,9 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 
 /**
  * Service class for scanning Java classes in a specified package to identify DTOs and entities.
@@ -21,49 +20,41 @@ import java.util.Optional;
 @Slf4j
 public class ClassScannerServiceImpl implements ClassScanner{
 
-    /**
-     * Identifies and returns the names of DTOs within the specified package.
-     *
-     * here packageName is file path as directory .
-     *
-     * @param packageName The name of the package to scan.
-     * @return A list of DTO class names.
-     * @throws IllegalArgumentException If the specified directory is not found.
-     */
+
     @Override
-    public List<String> dtoIdentifier(String packageName) throws FileNotFoundException{
-        List<String> classes = processDirectory(packageName);
+    public Map<String, String> dtoIdentifier(String packageName) throws FileNotFoundException {
+        Map<String, String> classMap = processDirectory(packageName);
 
         log.info("Classes:");
-        for (String clazz : classes) {
-            log.info(clazz);
+        for (Map.Entry<String, String> entry : classMap.entrySet()) {
+            log.info("Class name: {}, Path: {}", entry.getKey(), entry.getValue());
         }
-        return classes;
+        return classMap;
     }
 
-    private List<String> processDirectory(String packageName) throws FileNotFoundException{
-        List<String> classes = new ArrayList<>();
+    private Map<String, String> processDirectory(String packageName) throws FileNotFoundException {
+        Map<String, String> classMap = new HashMap<>();
         File directory = new File(packageName);
 
         if (directory.exists() && directory.isDirectory()) {
-            processFiles(directory, classes);
+            processFiles(directory, classMap);
         } else {
             throw new IllegalArgumentException("No directory found with name: " + packageName);
         }
 
-        return classes;
+        return classMap;
     }
 
-    private void processFiles(File directory, List<String> classes) throws FileNotFoundException {
+    private void processFiles(File directory, Map<String, String> classMap) throws FileNotFoundException {
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    processFiles(file, classes);
+                    processFiles(file, classMap);
                 } else if (file.getName().endsWith(".java")) {
                     CompilationUnit cu = StaticJavaParser.parse(file);
                     if (isDtoOrEntityClass(cu) || isDto(cu, file)) {
-                        classes.add(file.getName());
+                        classMap.put(file.getName(), file.getAbsolutePath());
                     }
                 }
             }
@@ -80,7 +71,7 @@ public class ClassScannerServiceImpl implements ClassScanner{
     private boolean isDtoOrEntityClass(CompilationUnit cu) {
         return cu.findAll(ClassOrInterfaceDeclaration.class)
                 .stream()
-                .anyMatch(c -> c.isAnnotationPresent("Entity") || c.isAnnotationPresent("Getter"));
+                .anyMatch(c -> c.isAnnotationPresent("Entity") || c.isAnnotationPresent("Getter")|| c.isAnnotationPresent("RestController")|| c.isAnnotationPresent("Controller")||c.isAnnotationPresent("Service"));
     }
 
     /**

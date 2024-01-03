@@ -94,9 +94,6 @@ public class ClassWriter implements Writer{
         System.out.println("tokenServiceField == "+tokenServiceField.type);
         testClassSpec.addField(tokenServiceField);
 
-        if (!testClasses.getImportStatementList().isEmpty()){
-            writeImports(testClassSpec, testClasses.getImportStatementList());
-        }
         if (!testClasses.getDependencies().isEmpty()) {
             writeDependencies(testClassSpec, testClasses.getDependencies());
         }
