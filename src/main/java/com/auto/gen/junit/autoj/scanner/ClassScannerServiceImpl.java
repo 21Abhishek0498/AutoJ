@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service class for scanning Java classes in a specified package to identify DTOs and entities.
@@ -21,51 +19,40 @@ import java.util.Optional;
 @Slf4j
 public class ClassScannerServiceImpl implements ClassScanner{
 
-    /**
-     * Identifies and returns the names of DTOs within the specified package.
-     *
-     * here packageName is file path as directory .
-     *
-     * @param packageName The name of the package to scan.
-     * @return A list of DTO class names.
-     * @throws IllegalArgumentException If the specified directory is not found.
-     */
-    @Override
-    public List<String> dtoIdentifier(String packageName) throws FileNotFoundException {
-        List<String> classes = processDirectory(packageName);
 
-//        log.info("Classes:");
-        System.out.println("Classes: ");
-        for (String clazz : classes) {
-//            log.info(clazz);
-            System.out.println(clazz);
+    @Override
+    public Map<String, String> classIdentifier(String packageName) throws FileNotFoundException {
+        Map<String, String> classMap = processDirectory(packageName);
+        log.info("Classes:");
+        for (Map.Entry<String, String> entry : classMap.entrySet()) {
+            log.info("Class name: {}, Path: {}", entry.getKey(), entry.getValue());
         }
-        return classes;
+        return classMap;
     }
 
-    private List<String> processDirectory(String packageName) throws FileNotFoundException {
-        List<String> classes = new ArrayList<>();
+    private Map<String, String> processDirectory(String packageName) throws FileNotFoundException {
+        Map<String, String> classMap = new HashMap<>();
         File directory = new File(packageName);
 
         if (directory.exists() && directory.isDirectory()) {
-            processFiles(directory, classes);
+            processFiles(directory, classMap);
         } else {
             throw new IllegalArgumentException("No directory found with name: " + packageName);
         }
 
-        return classes;
+        return classMap;
     }
 
-    private void processFiles(File directory, List<String> classes) throws FileNotFoundException {
+    private void processFiles(File directory, Map<String, String> classMap) throws FileNotFoundException {
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    processFiles(file, classes);
+                    processFiles(file, classMap);
                 } else if (file.getName().endsWith(".java")) {
                     CompilationUnit cu = StaticJavaParser.parse(file);
-                    if (isDtoOrEntityClass(cu) || isDto(cu, file)) {
-                        classes.add(file.getName());
+                    if (containsDtoOrEntityOrControllerOrServiceClassAnnotations(cu) || isDto(cu, file)) {
+                        classMap.put(file.getName(), file.getAbsolutePath());
                     }
                 }
             }
@@ -84,6 +71,21 @@ public class ClassScannerServiceImpl implements ClassScanner{
         return cu.findAll(ClassOrInterfaceDeclaration.class)
                 .stream()
                 .anyMatch(c -> c.isAnnotationPresent("Entity") || c.isAnnotationPresent("Getter"));
+    }
+
+    /**
+     * Checks whether a given CompilationUnit contains a class annotated as a Data Transfer Object (DTO) or an Entity.
+     *
+     * @param cu The CompilationUnit to be checked for DTO or Entity classes.
+     * @return {@code true} if the CompilationUnit contains at least one class annotated as an Entity or with specific annotations
+     *         indicating DTO, Controller, RestController, or Service; {@code false} otherwise.
+     */
+    public boolean containsDtoOrEntityOrControllerOrServiceClassAnnotations(CompilationUnit cu) {
+        return cu.findAll(ClassOrInterfaceDeclaration.class)
+                .stream()
+                .anyMatch(c -> c.isAnnotationPresent("Entity") || c.isAnnotationPresent("Getter")
+                        || c.isAnnotationPresent("RestController") || c.isAnnotationPresent("Controller")
+                        || c.isAnnotationPresent("Service"));
     }
 
     /**

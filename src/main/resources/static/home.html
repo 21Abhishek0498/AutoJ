@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Form</title>
+
+
+  <!-- Vendor CSS Files -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="vendor/aos/aos.css" rel="stylesheet">
+  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="css/main.css" rel="stylesheet">
+</head>
+
+<body>
+<header id="header" class="header d-flex align-items-center">
+
+  <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+    <nav id="navbar" class="navbar">
+      <ul>
+        <li><a href="/home">Back To Home</a></li>
+      </ul>
+    </nav><!-- .navbar -->
+
+    <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
+    <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+
+  </div>
+</header><!-- End Header -->
+<h2>Enter URL and Submit</h2>
+
+<div class="container">
+
+  <div class="col-lg-8" class="container position-relative">
+    <form action="/check-and-add" method="get">
+      <!-- Input for URL -->
+      <div class="col-md-6 form-group">
+        <label for="directory-path">Please provide the directory path to your project's pom.xml file: </label>
+        <input type="text" id="directory-path" name="directory-path" required>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-get-started">Submit</button>
+      </div>
+    </form>
+  </div>
+
+
+</div>
+
+<script src="js/main.js"></script>
+</body>
+
+</html>
