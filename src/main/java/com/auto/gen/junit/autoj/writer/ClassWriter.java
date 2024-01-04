@@ -71,7 +71,7 @@ public class ClassWriter implements Writer {
     }
 
     @Override
-    public void writeJavaClass(MyJunitClass testClasses, boolean isDtoFlag) throws Exception {
+    public void writeJavaClass(MyJunitClass testClasses, boolean isDtoFlag, String classPath) throws Exception {
 
         ClassName springBootTestClass = ClassName.get("org.springframework.boot.test.context", "SpringBootTest");
         TypeSpec.Builder testClassSpec = TypeSpec.classBuilder(testClasses.getClassName() + "Test");
@@ -94,9 +94,10 @@ public class ClassWriter implements Writer {
         System.out.println("tokenServiceField == " + tokenServiceField.type);
         testClassSpec.addField(tokenServiceField);
 
+        ClassName mockDependency = ClassName.get("org.mockito", "Mock");
         ClassName easyRandomTypeName = ClassName.get("org.jeasy.random", "EasyRandom");
-        FieldSpec easyRandomServiceField = FieldSpec.builder(easyRandomTypeName, "easyRandom")
-                .initializer("new EasyRandom()")
+        FieldSpec easyRandomServiceField = FieldSpec.builder(easyRandomTypeName, "easyRandom", Modifier.PRIVATE)
+                .addAnnotation(mockDependency)
                 .build();
         testClassSpec.addField(easyRandomServiceField);
 
@@ -107,11 +108,15 @@ public class ClassWriter implements Writer {
             writeSetupMethod(testClassSpec, testClasses);
         }
         if (!testClasses.getMethodList().isEmpty()) {
-            FieldSpec dtoClassInstance = FieldSpec.builder(classTypeName, "classInstance")
+            FieldSpec dtoClassInstance = FieldSpec.builder(classTypeName, "dtoClassInstance")
                     .initializer(String.format("easyRandom.nextObject(%s.class)", classTypeName))
                     .build();
             testClassSpec.addField(dtoClassInstance);
             if (isDtoFlag) {
+                 dtoClassInstance = FieldSpec.builder(classTypeName, "dtoClassInstance")
+                        .initializer(String.format("easyRandom.nextObject(%s.class)", classTypeName))
+                        .build();
+                testClassSpec.addField(dtoClassInstance);
                 writeSetterGetterMethod(testClassSpec, testClasses, classTypeName);
                 writeBuilderMethod(testClassSpec, testClasses, classTypeName);
             } else {
@@ -119,7 +124,7 @@ public class ClassWriter implements Writer {
             }
         }
         TypeSpec classType = testClassSpec.build();
-        JavaFile.Builder javaFileBuilder = JavaFile.builder("com.auto.gen.junit.autoj.javapoet", classType);
+        JavaFile.Builder javaFileBuilder = JavaFile.builder(testClasses.getPackageName(), classType);
 
         List<String> importStmts = testClasses.getImportStatementList();
         StringBuilder importStr = new StringBuilder();
@@ -130,12 +135,18 @@ public class ClassWriter implements Writer {
         }
         JavaFile javaFile = javaFileBuilder.build();
 
-        File outputDirectory = new File("src/test/java");
+        System.out.println("package name == "+ testClasses.getPackageName());
+
+//        File outputDirectory = new File("src/test/java");
+        String fileOutputPath =  classPath.substring(0,classPath.indexOf("src"));
+        fileOutputPath = fileOutputPath.replace("\\","/").concat("src/test");
+        System.out.print("fileOutputPath = "+fileOutputPath);
+        File outputDirectory = new File(fileOutputPath);
 
         javaFile.writeTo(outputDirectory);
 
         if (!testClasses.getImportStatementList().isEmpty()) {
-            writeImports(testClasses, importStr);
+            writeImports(fileOutputPath, importStr);
         }
 
         System.out.println("created classes");
@@ -184,8 +195,8 @@ public class ClassWriter implements Writer {
         for (JunitMethod method : testClasses.getMethodList()) {
             if (method.getMethodToBeTested().startsWith("set")) {
                 String getterMethod = method.getMethodToBeTested().replaceFirst("set", "get");
-                stmt.add(String.format("%s.%s(classInstance.%s())", testClasses.getClassName().toLowerCase(), method.getMethodToBeTested(), getterMethod));
-                stmt.add(String.format("Assert.assertEquals(%s.%s(),classInstance.%s())",testClasses.getClassName().toLowerCase(), getterMethod,getterMethod));
+                stmt.add(String.format("%s.%s(dtoClassInstance.%s())", testClasses.getClassName().toLowerCase(), method.getMethodToBeTested(), getterMethod));
+                stmt.add(String.format("Assert.assertEquals(%s.%s(),dtoClassInstance.%s())",testClasses.getClassName().toLowerCase(), method.getMethodToBeTested(),method.getMethodToBeTested()));
             }
         }
 
@@ -194,10 +205,10 @@ public class ClassWriter implements Writer {
     }
 
     @Override
-    public void writeImports(MyJunitClass testClasses, StringBuilder importStr) throws IOException {
-        String pckg = "com.auto.gen.junit.autoj.javapoet";
-        String pathStr = pckg.replaceAll("\\.", "/");
-        String filePath = "src/test/java/" + pathStr + "/" + testClasses.getClassName() + "Test.java";
+    public void writeImports(String filePath, StringBuilder importStr) throws IOException {
+//        String pckg = testClasses.getPackageName();
+//        String pathStr = pckg.replaceAll("\\.", "/");
+        filePath = "src/test/java/" + pathStr + "/" + testClasses.getClassName() + "Test.java";
 
         // Read the existing content of the file
         List<String> existingLines = Files.readAllLines(Path.of(filePath));

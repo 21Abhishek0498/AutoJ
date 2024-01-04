@@ -102,7 +102,7 @@ public class AutoJApplication implements CommandLineRunner {
             MyJunitClass translatedClass = translationManager.startTranslation(junitsClassToBeBuild, isDtoFlag);
             if (ObjectUtils.isNotEmpty(translatedClass)) {
                 System.out.println("TRANSLATED JSON ==== " + commonObjectMapper.toJsonString(translatedClass));
-                classWriter.writeJavaClass(translatedClass, isDtoFlag);
+//                classWriter.writeJavaClass(translatedClass, isDtoFlag, line);
             }
         }
         System.out.println("AutoJ flow completed!");
