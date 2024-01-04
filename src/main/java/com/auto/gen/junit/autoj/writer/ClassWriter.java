@@ -113,7 +113,7 @@ public class ClassWriter implements Writer {
                     .build();
             testClassSpec.addField(dtoClassInstance);
             if (isDtoFlag) {
-                FieldSpec dtoClassInstance = FieldSpec.builder(classTypeName, "dtoClassInstance")
+                dtoClassInstance = FieldSpec.builder(classTypeName, "dtoClassInstance")
                         .initializer(String.format("easyRandom.nextObject(%s.class)", classTypeName))
                         .build();
                 testClassSpec.addField(dtoClassInstance);
