@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Form</title>
+
+
+  <!-- Vendor CSS Files -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="vendor/aos/aos.css" rel="stylesheet">
+  <link href="vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="css/main.css" rel="stylesheet">
+</head>
+
+<body>
+<header id="header" class="header d-flex align-items-center">
+
+  <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+    <nav id="navbar" class="navbar">
+      <ul>
+        <li><a href="http://localhost:8080/home">Back To Home</a></li>
+      </ul>
+    </nav><!-- .navbar -->
+
+    <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
+    <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+
+  </div>
+</header><!-- End Header -->
+<div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+<h2>Enter project directory path</h2>
+
+
+  <form action="/get-test-classes" method="get">
+    <!-- Input for URL -->
+    <div class="col-md-6 form-group">
+      <label for="Directory-Path">Enter URL: </label>
+      <input type="text" id="Directory-Path" name="Directory-Path" required>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn-get-started">Submit</button>
+    </div>
+  </form>
+
+</div><!-- End Contact Form -->
+</body>
+
+</html>
