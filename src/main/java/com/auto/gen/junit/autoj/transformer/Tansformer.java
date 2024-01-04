@@ -1,12 +1,10 @@
 package com.auto.gen.junit.autoj.transformer;
 
 import com.auto.gen.junit.autoj.dto.*;
-import com.auto.gen.junit.autoj.exclusions.MethodCallExprExclusions;
 import com.auto.gen.junit.autoj.exclusions.PackageLevelExclusions;
 import com.auto.gen.junit.autoj.type.resolver.StringToClassResolver;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -68,7 +66,7 @@ public class Tansformer implements TransformerProcessor {
     }
 
     private static MyJunitClass buildJunitClass(TestClassBuilder testClassBuilder) {
-        MyJunitClass junitTransformer = MyJunitClass.builder().className(testClassBuilder.getTestClassName()).build();
+        MyJunitClass junitTransformer = MyJunitClass.builder().className(testClassBuilder.getTestClassName()).packageName(testClassBuilder.getPackageName()).build();
         junitTransformer.addImportStatements(testClassBuilder.getImportStatementList());
         junitTransformer.addClassDependencies(testClassBuilder.getDependencies());
         return junitTransformer;

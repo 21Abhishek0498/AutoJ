@@ -39,6 +39,16 @@ public class MyJunitClass {
     private Map<String,String> dependencies;
     private List<String> importStatementList;
 
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    private String packageName;
+
     @JsonIgnore
     public void addMethod(JunitMethod method){
         if(methodList==null)
@@ -49,7 +59,7 @@ public class MyJunitClass {
     @JsonIgnore
     public void addClassDependencies(List<ClazzDependencies> clazzDependencies){
         dependencies = new LinkedHashMap<>();
-        dependencies.putAll(clazzDependencies.stream().collect(Collectors.toMap(ClazzDependencies::getType,ClazzDependencies::getName)));
+        dependencies.putAll(clazzDependencies.stream().collect(Collectors.toMap(ClazzDependencies::getType,ClazzDependencies::getName, (s, a) -> s + "," + a)));
     }
 
     @JsonIgnore

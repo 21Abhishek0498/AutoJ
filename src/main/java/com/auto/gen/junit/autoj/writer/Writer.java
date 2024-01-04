@@ -19,5 +19,5 @@ public interface Writer {
 
     void writeImports(MyJunitClass testClasses, StringBuilder importStr) throws IOException;
 
-    void writeJavaClass(MyJunitClass testClasses) throws Exception;
+    void writeJavaClass(MyJunitClass testClasses, boolean isDtoFlag) throws Exception;
 }

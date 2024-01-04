@@ -23,7 +23,6 @@ public class ClassScannerServiceImpl implements ClassScanner{
     @Override
     public Map<String, String> classIdentifier(String packageName) throws FileNotFoundException {
         Map<String, String> classMap = processDirectory(packageName);
-
         log.info("Classes:");
         for (Map.Entry<String, String> entry : classMap.entrySet()) {
             log.info("Class name: {}, Path: {}", entry.getKey(), entry.getValue());
@@ -112,7 +111,8 @@ public class ClassScannerServiceImpl implements ClassScanner{
                     return true;
                 }
 
-                log.info("Field name: " + fieldName);
+//                log.info("Field name: " + fieldName);
+                System.out.println("Field name: " + fieldName);
             }
 
             return false;
