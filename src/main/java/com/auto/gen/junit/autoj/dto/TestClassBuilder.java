@@ -1,8 +1,6 @@
 package com.auto.gen.junit.autoj.dto;
 
-import lombok.Builder;
 import lombok.Data;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +24,16 @@ public class TestClassBuilder {
     private List<ClazzDependencies> dependencies;
     private List<ClazImportStatement> importStatementList;
     private String packageName;
+
+    public String getClassDirectoryPath() {
+        return classDirectoryPath;
+    }
+
+    public void setClassDirectoryPath(String classDirectoryPath) {
+        this.classDirectoryPath = classDirectoryPath;
+    }
+
+    private String classDirectoryPath;
     public TestClassBuilder(String className, String packageName){
         this.packageName = packageName;
         methodList = new ArrayList<>();

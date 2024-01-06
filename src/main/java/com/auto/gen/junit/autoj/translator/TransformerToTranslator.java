@@ -1,11 +1,15 @@
 package com.auto.gen.junit.autoj.translator;
 
+import com.auto.gen.junit.autoj.dto.ClazzDependencies;
 import com.auto.gen.junit.autoj.dto.JunitMethod;
 import com.auto.gen.junit.autoj.dto.MyJunitClass;
+import io.jbock.javapoet.ClassName;
+import io.jbock.javapoet.FieldSpec;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.lang.model.element.Modifier;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,14 +24,14 @@ public class TransformerToTranslator implements TranslationManager {
      * @param translatedJson
      */
     @Override
-    public MyJunitClass startTranslation(MyJunitClass translatedJson) {
+    public MyJunitClass startTranslation(MyJunitClass translatedJson, boolean isDtoFlag) {
         TranslateToEasyRandom translateToEasyRandom = new TranslateToEasyRandom();
         addMandatoryImports(translatedJson);
         if(ObjectUtils.isEmpty(translatedJson.getMethodList())){
             return null;
         }
         for (JunitMethod methods : translatedJson.getMethodList()) {
-            setMethodParameters(methods);
+            setMethodParameters(methods, isDtoFlag);
             Map<String, List<String>> toMockMap = methods.getMockObjects().getMockObjectList();
             List<String> thirdPartyMethodDetails = new LinkedList<>();
             List<List<String>> allStatementsTobeMocked = new LinkedList<>();
@@ -62,6 +66,8 @@ public class TransformerToTranslator implements TranslationManager {
         translatedJson.getImportStatementList().add("java.util.Set");
         translatedJson.getImportStatementList().add("java.util.List");
         translatedJson.getImportStatementList().add("org.mockito.Mockito");
+        translatedJson.getImportStatementList().add("org.junit.Assert");
+        translatedJson.getImportStatementList().add(translatedJson.getPackageName()+"."+translatedJson.getClassName());
 //        translatedJson.getImportStatementList().add("org.jeasy.random.EasyRandom");
     }
 
@@ -79,7 +85,7 @@ public class TransformerToTranslator implements TranslationManager {
             return translateToEasyRandom.getSet(type, 1);
         } else if (methodReturnType.startsWith("java.util.List")) {
             String[] parsedParentStr = methodReturnType.split("<");
-            String type = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">") - 1);
+            String type = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">"));
             return translateToEasyRandom.getSet(type, 1);
         } else
             return translateToEasyRandom.investigate(methodReturnType);
@@ -104,14 +110,49 @@ public class TransformerToTranslator implements TranslationManager {
         return mockMethodArgInvoke.map(s -> methodName + "(" + s + ")").orElse(("No such Type found"));
     }
 
-    private void setMethodParameters(JunitMethod methods) {
+    private void setMethodParameters(JunitMethod methods, boolean isDtoFlag) {
         List<String> methodTobeTestedParameters = methods.getMethodToBeTestedParameters().stream()
-                .map(e -> mockMethodInvocation(e))
+                .map(e -> isDtoFlag ? dtoFieldDataType(e) : mockMethodInvocation(e))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
         methods.setMethodToBeTestedParameters(methodTobeTestedParameters);
+    }
 
+    private Optional<String> dtoFieldDataType(String fieldDataType) {
+        TranslateToEasyRandom translateToEasyRandom = new TranslateToEasyRandom();
+        StringBuilder dataType = new StringBuilder();
+        if (fieldDataType.startsWith("java.util.Map")) {
+            String[] parsedParentStr = fieldDataType.split("<");
+            String parentType = parsedParentStr[0];
+            String[] parsedChildStr = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">")).split(",");
+            String leftChild = testMethodReturnType(parsedChildStr[0], translateToEasyRandom); // process the left child.
+            String rightChild = testMethodReturnType(parsedChildStr[1], translateToEasyRandom); // process the right child.
+            int indexLeft = leftChild.lastIndexOf(".");
+            int indexRight = rightChild.lastIndexOf(".");
+            String dataTypeLeftStr = leftChild.substring(indexLeft+1);
+            String dataTypeRightStr = rightChild.substring(indexRight+1);
+            return Optional.of(dataType.append("Map.of(easyRandom.nextObject(").append(dataTypeLeftStr).append(".class),easyRandom.nextObject(").append(dataTypeRightStr).append(".class))").toString());
+        } else if (fieldDataType.startsWith("java.util.Set")) {
+            String[] parsedParentStr = fieldDataType.split("<");
+            String type = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">") - 1);
+            int index = type.lastIndexOf(".");
+            String dataTypeStr = type.substring(index+1);
+            return Optional.of(dataType.append("easyRandom.objects(").append("Class.forName(").append(dataTypeStr).append(".class)").append(",").append(1).append(")").toString());
+        } else if (fieldDataType.startsWith("java.util.List")) {
+            String[] parsedParentStr = fieldDataType.split("<");
+            String type = parsedParentStr[1].substring(0, parsedParentStr[1].indexOf(">"));
+            int index = type.lastIndexOf(".");
+            String dataTypeStr = type.substring(index+1);
+            return Optional.of(dataType.append("easyRandom.objects(").append("Class.forName(").append(dataTypeStr).append(".class)").append(",").append(1).append(")").toString());
+        } else {
+            int index = fieldDataType.lastIndexOf(".");
+            if (index == -1) {
+                return Optional.of(dataType.append("easyRandom.nextObject(").append(fieldDataType).append(".class)").toString());
+            } else {
+                return Optional.of(dataType.append("easyRandom.nextObject(").append(fieldDataType.substring(index+1)).append(".class)").toString());
+            }
+        }
     }
 
     private Optional<String> mockMethodInvocation(String annotationValue) {

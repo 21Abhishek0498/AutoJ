@@ -4,5 +4,5 @@ import com.auto.gen.junit.autoj.dto.MyJunitClass;
 
 public interface TranslationManager {
 
-    MyJunitClass startTranslation(MyJunitClass translatedJson);
+    MyJunitClass startTranslation(MyJunitClass translatedJson, boolean isDtoFlag);
 }

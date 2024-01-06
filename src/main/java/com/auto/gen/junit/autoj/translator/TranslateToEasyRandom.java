@@ -1,5 +1,6 @@
 package com.auto.gen.junit.autoj.translator;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TranslateToEasyRandom {
@@ -54,8 +55,15 @@ public class TranslateToEasyRandom {
         }
         else if(returnType.contains("void") || returnType.contains("Void"))
             return "doNothing()";
-        else
-            return "easyRandom.nextObject(Class.forName(returnType))";
+        else {
+            int index = returnType.lastIndexOf(".");
+            if (index == -1) {
+                return String.format("easyRandom.nextObject(%s.class)",returnType);
+            } else {
+                return String.format("easyRandom.nextObject(Class.forName(%s.class))",returnType.substring(index+1));
+            }
+//            return String.format("easyRandom.nextObject(Class.forName(%s))",returnType);
+        }
     }
 
 
