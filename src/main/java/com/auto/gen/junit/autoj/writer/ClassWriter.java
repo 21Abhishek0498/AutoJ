@@ -97,8 +97,8 @@ public class ClassWriter implements Writer {
 
         ClassName mockDependency = ClassName.get("org.mockito", "Mock");
         ClassName easyRandomTypeName = ClassName.get("org.jeasy.random", "EasyRandom");
-        FieldSpec easyRandomServiceField = FieldSpec.builder(easyRandomTypeName, "easyRandom", Modifier.PRIVATE)
-                .addAnnotation(mockDependency)
+        FieldSpec easyRandomServiceField = FieldSpec.builder(easyRandomTypeName, "easyRandom")
+                .initializer("new EasyRandom()")
                 .build();
         testClassSpec.addField(easyRandomServiceField);
 
@@ -109,15 +109,11 @@ public class ClassWriter implements Writer {
             writeSetupMethod(testClassSpec, testClasses);
         }
         if (!testClasses.getMethodList().isEmpty()) {
-            FieldSpec dtoClassInstance = FieldSpec.builder(classTypeName, "dtoClassInstance")
+            FieldSpec dtoClassInstance = FieldSpec.builder(classTypeName, "classInstance")
                     .initializer(String.format("easyRandom.nextObject(%s.class)", classTypeName))
                     .build();
             testClassSpec.addField(dtoClassInstance);
             if (isDtoFlag) {
-                 dtoClassInstance = FieldSpec.builder(classTypeName, "dtoClassInstance")
-                        .initializer(String.format("easyRandom.nextObject(%s.class)", classTypeName))
-                        .build();
-                testClassSpec.addField(dtoClassInstance);
                 writeSetterGetterMethod(testClassSpec, testClasses, classTypeName);
                 writeBuilderMethod(testClassSpec, testClasses, classTypeName);
             } else {
@@ -196,8 +192,8 @@ public class ClassWriter implements Writer {
         for (JunitMethod method : testClasses.getMethodList()) {
             if (method.getMethodToBeTested().startsWith("set")) {
                 String getterMethod = method.getMethodToBeTested().replaceFirst("set", "get");
-                stmt.add(String.format("%s.%s(dtoClassInstance.%s())", testClasses.getClassName().toLowerCase(), method.getMethodToBeTested(), getterMethod));
-                stmt.add(String.format("Assert.assertEquals(%s.%s(),dtoClassInstance.%s())",testClasses.getClassName().toLowerCase(), method.getMethodToBeTested(),method.getMethodToBeTested()));
+                stmt.add(String.format("%s.%s(classInstance.%s())", testClasses.getClassName().toLowerCase(), method.getMethodToBeTested(), getterMethod));
+                stmt.add(String.format("Assert.assertEquals(%s.%s(),classInstance.%s())",testClasses.getClassName().toLowerCase(), getterMethod,getterMethod));
             }
         }
 
