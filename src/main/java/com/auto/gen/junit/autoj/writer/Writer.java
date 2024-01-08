@@ -4,6 +4,7 @@ import com.auto.gen.junit.autoj.dto.*;
 import io.jbock.javapoet.MethodSpec;
 import io.jbock.javapoet.TypeSpec;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ public interface Writer {
 
     void writeDependencies(TypeSpec.Builder testClassSpec, Map<String,String> fields);
 
-    void writeImports(String filePath, StringBuilder importStr) throws IOException;
+    void writeImports(MyJunitClass testClasses, StringBuilder importStr, File filePath) throws IOException;
 
     void writeJavaClass(MyJunitClass testClasses, boolean isDtoFlag, String classPath) throws Exception;
 }

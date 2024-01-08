@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.lang.model.element.Modifier;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -139,14 +140,14 @@ public class ClassWriter implements Writer {
 
 //        File outputDirectory = new File("src/test/java");
         String fileOutputPath =  classPath.substring(0,classPath.indexOf("src"));
-        fileOutputPath = fileOutputPath.replace("\\","/").concat("src/test");
+//        String packageName = testClasses.getPackageName().replace(".","\\");
+        fileOutputPath = fileOutputPath.concat("src\\test\\");
         System.out.print("fileOutputPath = "+fileOutputPath);
         File outputDirectory = new File(fileOutputPath);
 
         javaFile.writeTo(outputDirectory);
-
         if (!testClasses.getImportStatementList().isEmpty()) {
-            writeImports(fileOutputPath, importStr);
+            writeImports(testClasses, importStr, outputDirectory);
         }
 
         System.out.println("created classes");
@@ -205,12 +206,17 @@ public class ClassWriter implements Writer {
     }
 
     @Override
-    public void writeImports(String filePath, StringBuilder importStr) throws IOException {
-//        String pckg = testClasses.getPackageName();
-//        String pathStr = pckg.replaceAll("\\.", "/");
-        filePath = "src/test/java/" + pathStr + "/" + testClasses.getClassName() + "Test.java";
+    public void writeImports(MyJunitClass testClasses, StringBuilder importStr, File outputDirectory) throws IOException {
+        String pckg = testClasses.getPackageName();
+        String pathStr = pckg.replace(".", "\\");
+        String filePath = outputDirectory.getPath() + "\\" + pathStr + "\\" + testClasses.getClassName() + "Test.java";
+        System.out.println("FILEPATH == "+filePath);
+        FileWriter fileOutputPath = new FileWriter(filePath, true);
+        fileOutputPath.close();
 
         // Read the existing content of the file
+//        String filePath = outputDirectory.getPath();
+        System.out.println("file path output = "+filePath);
         List<String> existingLines = Files.readAllLines(Path.of(filePath));
 
         // Check if the file has at least two lines
