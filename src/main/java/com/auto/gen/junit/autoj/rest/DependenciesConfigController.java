@@ -61,7 +61,7 @@ public class DependenciesConfigController {
                 return "map-of-class-paths";
             }
             List<String> selectedKeyList = Arrays.asList(selectedKeys.split(","));
-//            gen.generateTest(selectedKeyList);
+             gen.actualTestClass(selectedKeyList);
             return "map-of-class-paths";
         } catch (Exception e) {
             e.printStackTrace();
