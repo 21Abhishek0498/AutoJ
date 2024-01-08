@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.lang.model.element.Modifier;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class ClassWriter implements Writer {
     }
 
     @Override
-    public void writeJavaClass(MyJunitClass testClasses, boolean isDtoFlag) throws Exception {
+    public void writeJavaClass(MyJunitClass testClasses, boolean isDtoFlag, String classPath) throws Exception {
 
         ClassName springBootTestClass = ClassName.get("org.springframework.boot.test.context", "SpringBootTest");
         TypeSpec.Builder testClassSpec = TypeSpec.classBuilder(testClasses.getClassName() + "Test");
@@ -94,6 +95,7 @@ public class ClassWriter implements Writer {
         System.out.println("tokenServiceField == " + tokenServiceField.type);
         testClassSpec.addField(tokenServiceField);
 
+        ClassName mockDependency = ClassName.get("org.mockito", "Mock");
         ClassName easyRandomTypeName = ClassName.get("org.jeasy.random", "EasyRandom");
         FieldSpec easyRandomServiceField = FieldSpec.builder(easyRandomTypeName, "easyRandom")
                 .initializer("new EasyRandom()")
@@ -119,7 +121,7 @@ public class ClassWriter implements Writer {
             }
         }
         TypeSpec classType = testClassSpec.build();
-        JavaFile.Builder javaFileBuilder = JavaFile.builder("com.auto.gen.junit.autoj.javapoet", classType);
+        JavaFile.Builder javaFileBuilder = JavaFile.builder(testClasses.getPackageName(), classType);
 
         List<String> importStmts = testClasses.getImportStatementList();
         StringBuilder importStr = new StringBuilder();
@@ -130,12 +132,18 @@ public class ClassWriter implements Writer {
         }
         JavaFile javaFile = javaFileBuilder.build();
 
-        File outputDirectory = new File("src/test/java");
+        System.out.println("package name == "+ testClasses.getPackageName());
+
+//        File outputDirectory = new File("src/test/java");
+        String fileOutputPath =  classPath.substring(0,classPath.indexOf("src"));
+//        String packageName = testClasses.getPackageName().replace(".","\\");
+        fileOutputPath = fileOutputPath.concat("src\\test\\");
+        System.out.print("fileOutputPath = "+fileOutputPath);
+        File outputDirectory = new File(fileOutputPath);
 
         javaFile.writeTo(outputDirectory);
-
         if (!testClasses.getImportStatementList().isEmpty()) {
-            writeImports(testClasses, importStr);
+            writeImports(testClasses, importStr, outputDirectory);
         }
 
         System.out.println("created classes");
@@ -194,12 +202,17 @@ public class ClassWriter implements Writer {
     }
 
     @Override
-    public void writeImports(MyJunitClass testClasses, StringBuilder importStr) throws IOException {
-        String pckg = "com.auto.gen.junit.autoj.javapoet";
-        String pathStr = pckg.replaceAll("\\.", "/");
-        String filePath = "src/test/java/" + pathStr + "/" + testClasses.getClassName() + "Test.java";
+    public void writeImports(MyJunitClass testClasses, StringBuilder importStr, File outputDirectory) throws IOException {
+        String pckg = testClasses.getPackageName();
+        String pathStr = pckg.replace(".", "\\");
+        String filePath = outputDirectory.getPath() + "\\" + pathStr + "\\" + testClasses.getClassName() + "Test.java";
+        System.out.println("FILEPATH == "+filePath);
+        FileWriter fileOutputPath = new FileWriter(filePath, true);
+        fileOutputPath.close();
 
         // Read the existing content of the file
+//        String filePath = outputDirectory.getPath();
+        System.out.println("file path output = "+filePath);
         List<String> existingLines = Files.readAllLines(Path.of(filePath));
 
         // Check if the file has at least two lines
