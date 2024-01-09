@@ -45,9 +45,9 @@ public class DependenciesConfigController {
             model.addAttribute("mapValues", classMap);
             return "map-of-class-paths";
         } catch (Exception e) {
-            e.printStackTrace();
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("error", "Error processing request: " + e.getMessage());
+            model.addAttribute("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
             model.addAttribute("mapValues", errorMap);
             return "map-values";
         }
