@@ -61,12 +61,14 @@ public class DependenciesConfigController {
                 return "map-of-class-paths";
             }
             List<String> selectedKeyList = Arrays.asList(selectedKeys.split(","));
-             gen.actualTestClass(selectedKeyList);
-            return "map-of-class-paths";
+            model.addAttribute("message", gen.actualTestClass(selectedKeyList));
+            return "common-message";
         } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "An unexpected error occurred.");
-            return "map-of-class-paths";
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("error", "Error processing request: " + e.getMessage());
+            model.addAttribute("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            model.addAttribute("mapValues", errorMap);
+            return "map-values";
         }
     }
 
@@ -92,12 +94,16 @@ public class DependenciesConfigController {
      * @throws Exception If an error occurs during the operation, an internal server error response is returned.
      */
     @GetMapping(value = "/check-and-add")
-    public ResponseEntity<String> checkAndAddDependency(@RequestParam(name = "directory-path", required = true) String directoryPath) {
+    public String checkAndAddDependency(@RequestParam(name = "directory-path", required = true) String directoryPath,Model model) {
         try {
-            return new ResponseEntity<>(serviceImpl.checkAndAdd(directoryPath), HttpStatus.OK);
+            model.addAttribute("message", serviceImpl.checkAndAdd(directoryPath));
+            return "common-message";
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Error processing request: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("error", "Error processing request: " + e.getMessage());
+            model.addAttribute("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            model.addAttribute("mapValues", errorMap);
+            return "map-values";
         }
     }
 

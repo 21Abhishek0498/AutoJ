@@ -8,7 +8,6 @@ import com.auto.gen.junit.autoj.scanner.ClassScanner;
 import com.auto.gen.junit.autoj.transformer.TransformerProcessor;
 import com.auto.gen.junit.autoj.translator.TranslationManager;
 import com.auto.gen.junit.autoj.type.resolver.Resolver;
-import com.auto.gen.junit.autoj.type.resolver.StringToClassResolver;
 import com.auto.gen.junit.autoj.validator.intf.SourceCodePathValidator;
 import com.auto.gen.junit.autoj.writer.Writer;
 import com.github.javaparser.StaticJavaParser;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -102,7 +100,7 @@ public class GeneratorHelper implements Generator {
     }
 
     @Override
-    public void actualTestClass(List<String> classPath) throws Exception {
+    public String actualTestClass(List<String> classPath) throws Exception {
         boolean isDtoFlag = false;
         for (String line : classPath) {
             Map<String, Object> map = generate(line, "test");
@@ -129,8 +127,9 @@ public class GeneratorHelper implements Generator {
                     classWriter.writeJavaClass(translatedClass, isDtoFlag, line);
                 }
             }
-            System.out.println("AutoJ flow completed!");
+
         }
+        return "JUnit tests generated successfully! Please verify them in the 'src/test' directory of your project.";
     }
 
 }
