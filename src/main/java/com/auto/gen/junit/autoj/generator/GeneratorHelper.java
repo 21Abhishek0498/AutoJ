@@ -13,6 +13,7 @@ import com.auto.gen.junit.autoj.validator.intf.SourceCodePathValidator;
 import com.auto.gen.junit.autoj.writer.Writer;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 @Service
+@Slf4j
 public class GeneratorHelper implements Generator {
 
     @Autowired
@@ -60,6 +62,7 @@ public class GeneratorHelper implements Generator {
      */
     @Override
     public Map<String, Object> generate(String sourceCodePath) throws IOException {
+        log.info("in generate method");
         Map<String, Object> parsedData = new HashMap<>();
         resolver.setResolver(sourceCodePath, null);
         Map<String, String> files = getAllSourceDirJavaFiles(sourceCodePath);
@@ -90,6 +93,7 @@ public class GeneratorHelper implements Generator {
     //Test single class
     @Override
     public Map<String, Object> generate(String sourceCodePath, String test) throws IOException {
+        log.info("in generate method");
         resolver.setResolver(sourceCodePath, test);
         Map<String, Object> parsedData = new HashMap<>();
         TestClassBuilder testClass = parseFile.startParsing(new File(sourceCodePath));

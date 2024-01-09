@@ -13,6 +13,8 @@ import com.auto.gen.junit.autoj.validator.intf.SourceCodePathValidator;
 import com.auto.gen.junit.autoj.writer.Writer;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.XSlf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -29,6 +31,7 @@ import java.util.Map;
 import static java.nio.file.Files.readAllLines;
 
 @SpringBootApplication
+@Slf4j
 public class AutoJApplication implements CommandLineRunner {
 
     @Autowired
@@ -98,20 +101,20 @@ public class AutoJApplication implements CommandLineRunner {
 
             MyJunitClass junitsClassToBeBuild = transformerProcessor.transform((TestClassBuilder) entry.getValue());
             commonObjectMapper.toJsonString(junitsClassToBeBuild);
-            System.out.println("TRANSFORMED JSON ==== " + commonObjectMapper.toJsonString(junitsClassToBeBuild));
+            log.info("TRANSFORMED JSON ==== " + commonObjectMapper.toJsonString(junitsClassToBeBuild));
             MyJunitClass translatedClass = translationManager.startTranslation(junitsClassToBeBuild, isDtoFlag);
             if (ObjectUtils.isNotEmpty(translatedClass)) {
-                System.out.println("TRANSLATED JSON ==== " + commonObjectMapper.toJsonString(translatedClass));
+                log.info("TRANSLATED JSON ==== " + commonObjectMapper.toJsonString(translatedClass));
 //                classWriter.writeJavaClass(translatedClass, isDtoFlag, line);
             }
         }
-        System.out.println("AutoJ flow completed!");
+        log.info("AutoJ flow completed!");
     }
 
     private void validatePath(String[] args) {
         if (args != null && args.length > 0)
             sourceCodePathValidator.validate(args[0]);
         else
-            System.out.println("Please provide a valid path");
+            log.info("Please provide a valid path");
     }
 }
