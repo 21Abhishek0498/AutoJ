@@ -2,184 +2,265 @@
 <html lang="en">
 
 <head>
-	<meta charset="utf-8">
-	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-	<title>Assertion Aces - Homepage</title>
-	<meta content="" name="description">
-	<meta content="" name="keywords">
+    <title>Assertion Aces - Homepage</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
 
-	<!-- Favicons -->
-	<link href="img/cg-favicon.png" rel="icon">
-	<link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+    <!-- Favicons -->
+    <link href="img/cg-favicon.png" rel="icon">
+    <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
 
-	<!-- Google Fonts -->
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link
-		href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
-		rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+            rel="stylesheet">
 
-	<!-- Vendor CSS Files -->
-	<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-	<link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-	<link href="vendor/aos/aos.css" rel="stylesheet">
-	<link href="vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-	<link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <!-- Vendor CSS Files -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="vendor/aos/aos.css" rel="stylesheet">
+    <link href="vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
-	<!-- Template Main CSS File -->
-	<link href="css/main.css" rel="stylesheet">
+    <!-- Template Main CSS File -->
+    <link href="css/main.css" rel="stylesheet">
+    <style>
+  footer {
+    text-align: center;
+    padding: 3px;
+    background-color: #008374;
+    color: white;
+}
+    </style>
 </head>
 
 <body>
 
-	<header id="header" class="header d-flex align-items-center">
+<header id="header" class="header d-flex align-items-center">
 
-		<div class="container-fluid container-xl d-flex align-items-center justify-content-between">
-			<nav id="navbar" class="navbar">
-				<ul>
-					<li><a href="#hero">Home</a></li>
-					<li><a href="#about">About</a></li>
-				</ul>
-			</nav><!-- .navbar -->
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+        <a href="#hero" class="logo d-flex align-items-center">
+            <!-- Uncomment the line below if you also wish to use an image logo -->
+            <!-- <img src="assets/img/logo.png" alt=""> -->
+            <h1>Assertion Aces<span>.</span></h1>
+        </a>
+        <nav id="navbar" class="navbar">
+            <ul>
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#team">Team</a></li>
+            </ul>
+        </nav><!-- .navbar -->
 
-			<i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
-			<i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+        <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
+        <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
 
-		</div>
-	</header><!-- End Header -->
-	<!-- End Header -->
+    </div>
+</header><!-- End Header -->
+<!-- End Header -->
 
-	<!-- ======= Hero Section ======= -->
-	<section id="hero" class="hero">
-		<div class="container position-relative">
-			<div class="row gy-5" data-aos="fade-in">
-				<div
-					class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center text-center text-lg-start">
-					<h2> <span>Assertion Aces</span> welcomes you </h2>
-					<h4 class="text-light">Automated JUnit Test Suite Generator</h4>
-					<br \>
-					<div class="procedure">
-						<ol class="list-group">
-							<li class="list-group-item procedure-item text-light">
-								Step 1: Check and Add Required Dependencies (You can also skip this)
-								<ul class="list-group">
-									<li class="list-group-item procedure-item text-light">&#187; Enter pom.xml file path
-									</li>
-									<li class="list-group-item procedure-item text-light">&#187; Hit that submit button
-									</li>
-								</ul>
-							</li>
-							<li class="list-group-item procedure-item text-light">
-								Step 2: Generate your Test Classes
-								<ul class="list-group">
-									<li class="list-group-item procedure-item text-light">&#187; Enter project directory
-										path</li>
-									<li class="list-group-item procedure-item text-light">&#187; Check all the classes
-										to generate test classes</li>
-									<li class="list-group-item procedure-item text-light">&#187; Hit that submit button
-									</li>
-								</ul>
-							</li>
-						</ol>
-					</div>
-					<br \>
-					<div class="d-flex justify-content-center justify-content-lg-start">
-						<a href="home.html" class="btn-get-started">Check and Add Required Dependencies</a>
-						<a href="TestClassList.html" class="btn-get-started">Generate your Test Classes</a>
-					</div>
-				</div>
-				<div class="col-lg-6 order-1 order-lg-2">
-					<img src="img/hero-img.svg" class="img-fluid" alt="" data-aos="zoom-out" data-aos-delay="100">
-				</div>
-			</div>
-		</div>
+<!-- ======= Hero Section ======= -->
+<section id="hero" class="hero">
+    <div class="container position-relative">
+        <div class="row gy-5" data-aos="fade-in">
+            <div
+                    class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center text-center text-lg-start">
+                <h2> Welcome to <span>Assertion Aces</span></h2>
+                <h4 class="text-light">Automated JUnit Test Suite Generator</h4>
+                <br \>
+                <div class="procedure">
+                    <ol class="list-group">
+                        <li class="list-group-item procedure-item text-light">
+                            Step 1: Check and Add Required Dependencies (You can also skip this)
+                            <ul class="list-group">
+                                <li class="list-group-item procedure-item text-light">&#187; Enter pom.xml file path
+                                </li>
+                                <li class="list-group-item procedure-item text-light">&#187; Hit that submit button
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="list-group-item procedure-item text-light">
+                            Step 2: Generate your Test Classes
+                            <ul class="list-group">
+                                <li class="list-group-item procedure-item text-light">&#187; Enter project directory
+                                    path
+                                </li>
+                                <li class="list-group-item procedure-item text-light">&#187; Check all the classes
+                                    to generate test classes
+                                </li>
+                                <li class="list-group-item procedure-item text-light">&#187; Hit that submit button
+                                </li>
+                            </ul>
+                        </li>
+                    </ol>
+                    <div class="d-flex justify-content-center justify-content-lg-start">
+                        <a href="home.html" class="btn-get-started">Check and Add Required Dependencies</a>
+                        <a href="TestClassList.html" class="btn-get-started">Generate your Test Classes</a>
+                    </div>
+                </div>
+                <br \>
+            </div>
+            <div class="col-lg-6 order-1 order-lg-2">
+                <img src="img/hero-img.svg" class="img-fluid" alt="" data-aos="zoom-out" data-aos-delay="100">
+            </div>
+        </div>
+    </div>
 
-		</div>
-	</section>
-	<!-- End Hero Section -->
+    </div>
+</section>
+<!-- End Hero Section -->
 
-	<main id="main">
+<main id="main">
 
-		<!-- ======= About Us Section ======= -->
-		<section id="about" class="about">
-			<div class="container" data-aos="fade-up">
+    <!-- ======= About Us Section ======= -->
+    <section id="about" class="about">
+        <div class="container" data-aos="fade-up">
 
-				<div class="section-header">
-					<h2>About The Product</h2>
-					<p>
-						Test Automation software is the best way to increase the effectiveness, efficiency and coverage
-						of your software testing.
-					</p>
-				</div>
+            <div class="section-header">
+                <h2>About The Product</h2>
+                <p>
+                    Test Automation software is the best way to increase the effectiveness, efficiency and coverage
+                    of your software testing.
+                </p>
+            </div>
 
-				<div class="row gy-4">
-					<div class="col-lg-6">
-						<h3>Junit Code Generator</h3>
-						<img src="img/about.jpg" class="img-fluid rounded-4 mb-4" alt="Flow Chart of The Product">
-						<p>
-							Product Image
-						</p>
-					</div>
-					<div class="col-lg-6">
-						<div class="content ps-0 ps-lg-5">
-							<p class="fst-italic">
-								Developers strive to catch all possible defects before product is released.
-								<br />
-								One essential component of software development that guarantees the quality and
-								integrity of the code is code-based testing.
-								<br />
-								Prior to the software being deployed, it is required to methodically testing the code to
-								find errors, flaws, and vulnerabilities.
-							</p>
-							<h6>What are the advantages of using a Test Suite Generator?</h6>
-							<ul>
-								<li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Saves Time</li>
-								<li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Better Code
-									Coverage</li>
-								<li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Less Bias</li>
-								<li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Less Prone to
-									Errors</li>
-								<li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Low Redundancy</li>
-								<li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Optimized</li>
-								<!-- <li><i class="bi bi-check-circle-fill"></i> Flexible to Java Version</li> -->
-							</ul>
-							<h6>What are the disadvantages of manual testing by developers?</h6>
-							<ul>
-								<li><i class="bi bi-x-circle-fill" style="color: red;"></i> Limited Time and Resources
-								</li>
-								<li><i class="bi bi-x-circle-fill" style="color: red;"></i> Inadequate Coverage</li>
-								<li><i class="bi bi-x-circle-fill" style="color: red;"></i> Maintainability Issues</li>
-								<li><i class="bi bi-x-circle-fill" style="color: red;"></i> Biased Testing</li>
-								<li><i class="bi bi-x-circle-fill" style="color: red;"></i> Dependency on Developer's
-									Domain Knowledge</li>
-								<li><i class="bi bi-x-circle-fill" style="color: red;"></i> Inflexible and Static Test
-									Case Suites</li>
-							</ul>
-						</div>
-					</div>
-				</div>
+            <div class="row gy-4">
+                <div class="col-lg-6">
+                    <h3>Junit Code Generator</h3>
+                    <img src="img/about.jpg" class="img-fluid rounded-4 mb-4" alt="Flow Chart of The Product">
+                    <p>
+                        Product Image
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="content ps-0 ps-lg-5">
+                        <p class="fst-italic">
+                            Developers strive to catch all possible defects before product is released.
+                            <br/>
+                            One essential component of software development that guarantees the quality and
+                            integrity of the code is code-based testing.
+                            <br/>
+                            Prior to the software being deployed, it is required to methodically testing the code to
+                            find errors, flaws, and vulnerabilities.
+                        </p>
+                        <h6>What are the advantages of using a Test Suite Generator?</h6>
+                        <ul>
+                            <li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Saves Time</li>
+                            <li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Better Code
+                                Coverage
+                            </li>
+                            <li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Less Bias</li>
+                            <li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Less Prone to
+                                Errors
+                            </li>
+                            <li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Low Redundancy</li>
+                            <li><i class="bi bi-check-circle-fill" style="color: limegreen"></i> Optimized</li>
+                            <!-- <li><i class="bi bi-check-circle-fill"></i> Flexible to Java Version</li> -->
+                        </ul>
+                        <h6>What are the disadvantages of manual testing by developers?</h6>
+                        <ul>
+                            <li><i class="bi bi-x-circle-fill" style="color: red;"></i> Limited Time and Resources
+                            </li>
+                            <li><i class="bi bi-x-circle-fill" style="color: red;"></i> Inadequate Coverage</li>
+                            <li><i class="bi bi-x-circle-fill" style="color: red;"></i> Maintainability Issues</li>
+                            <li><i class="bi bi-x-circle-fill" style="color: red;"></i> Biased Testing</li>
+                            <li><i class="bi bi-x-circle-fill" style="color: red;"></i> Dependency on Developer's
+                                Domain Knowledge
+                            </li>
+                            <li><i class="bi bi-x-circle-fill" style="color: red;"></i> Inflexible and Static Test
+                                Case Suites
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-			</div>
-		</section>
+        </div>
+    </section>
 
-	</main>
-	<footer id="footer" class="flex-shrink-0 py-4 bg-dark text-white-50">
-		<div class="container-md text-center ">
-			<h5>All rights reserved by Capgemini. Copyright &copy;2024</h5>
-		</div>
-	</footer>
+    <section id="team" class="team">
+        <div class="container" data-aos="fade-up">
+            <div class="section-header">
+                <h2>Our Team</h2>
+            </div>
+            <div class="row gy-4">
+                <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
+                    <div class="member">
+                        <img src="img/Abhishek.jpg" class="img-fluid" alt="">
+                        <h4>William Anderson</h4>
+                        <span>Developer</span>
+                    </div>
+                </div><!-- End Team Member -->
+                <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
+                    <div class="member">
+                        <img src="img/Abhishek.jpg" class="img-fluid" alt="">
+                        <h4>William Anderson</h4>
+                        <span>Developer</span>
+                    </div>
+                </div><!-- End Team Member -->
+                <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
+                    <div class="member">
+                        <img src="img/Abhishek.jpg" class="img-fluid" alt="">
+                        <h4>William Anderson</h4>
+                        <span>Developer</span>
+                    </div>
+                </div><!-- End Team Member -->
+                <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
+                    <div class="member">
+                        <img src="img/Abhishek.jpg" class="img-fluid" alt="">
+                        <h4>William Anderson</h4>
+                        <span>Developer</span>
+                    </div>
+                </div><!-- End Team Member -->
+                <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
+                    <div class="member">
+                        <img src="img/Abhishek.jpg" class="img-fluid" alt="">
+                        <h4>William Anderson</h4>
+                        <span>Developer</span>
+                    </div>
+                </div><!-- End Team Member -->
+                <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
+                    <div class="member">
+                        <img src="img/Abhishek.jpg" class="img-fluid" alt="">
+                        <h4>William Anderson</h4>
+                        <span>Developer</span>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
+                    <div class="member">
+                        <img src="img/sidh.jpg" class="img-fluid" alt="">
+                        <h4>William Anderson</h4>
+                        <span>Developer</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
 
 
-	<!-- Vendor JS Files -->
-	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-	<script src="vendor/aos/aos.js"></script>
-	<script src="vendor/glightbox/js/glightbox.min.js"></script>
-	<script src="vendor/purecounter/purecounter_vanilla.js"></script>
-	<script src="vendor/swiper/swiper-bundle.min.js"></script>
-	<script src="vendor/isotope-layout/isotope.pkgd.min.js"></script>
-	<script src="vendor/php-email-form/validate.js"></script>
-	<script src="js/main.js"></script>
+</main>
+<footer>
+    <div class="container-md text-center ">
+        <h5>All rights reserved by Capgemini. Copyright &copy;2024</h5>
+    </div>
+</footer>
+
+
+<!-- Vendor JS Files -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="vendor/aos/aos.js"></script>
+<script src="vendor/glightbox/js/glightbox.min.js"></script>
+<script src="vendor/purecounter/purecounter_vanilla.js"></script>
+<script src="vendor/swiper/swiper-bundle.min.js"></script>
+<script src="vendor/isotope-layout/isotope.pkgd.min.js"></script>
+<script src="vendor/php-email-form/validate.js"></script>
+<script src="js/main.js"></script>
 
 </body>
 

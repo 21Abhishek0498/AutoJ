@@ -1258,3 +1258,7 @@ section {
 .footer .credits a {
 	color: #fff;
 }
+
+.newline {
+    margin-top: 10px; /* Adjust the margin as needed for the desired spacing */
+}

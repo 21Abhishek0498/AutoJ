@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <link href="img/cg-favicon.png" rel="icon">
+    <!-- Vendor CSS Files -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="vendor/aos/aos.css" rel="stylesheet">
+    <link href="vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="css/main.css" rel="stylesheet">
+</head>
+<body>
+<header id="header" class="header d-flex align-items-center">
+
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+        <nav id="navbar" class="navbar">
+            <ul>
+                <li><a href="http://localhost:8080/home">Back To Home</a></li>
+            </ul>
+        </nav><!-- .navbar -->
+
+        <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
+        <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+
+    </div>
+</header><!-- End Header -->
+
+<div style="text-align: center; margin-top: 50px;">
+    <h1>Oops! Something Went Wrong</h1>
+    <p>We encountered an error while processing your request.</p>
+
+    <div th:if="${statusCode}">
+        <p>Status Code: <span th:text="${statusCode}"></span></p>
+    </div>
+
+    <div th:if="${mapValues.error}">
+        <p>Error: <span th:text="${mapValues.error}"></span></p>
+    </div>
+
+
+    <p>Contact support if the issue persists.</p>
+</div>
+
+</body>
+</html>

@@ -15,6 +15,14 @@
 
   <!-- Template Main CSS File -->
   <link href="css/main.css" rel="stylesheet">
+  <style>
+  footer {
+    text-align: center;
+    padding: 3px;
+    background-color: #008374;
+    color: white;
+}
+    </style>
 </head>
 
 <body>
@@ -32,7 +40,6 @@
 
   </div>
 </header><!-- End Header -->
-<h2>Enter URL and Submit</h2>
 
 <div class="container">
 
@@ -40,18 +47,21 @@
     <form action="/check-and-add" method="get">
       <!-- Input for URL -->
       <div class="col-md-6 form-group">
+        <h2>Enter URL and Submit</h2>
         <label for="directory-path">Please provide the directory path to your project's pom.xml file: </label>
-        <input type="text" id="directory-path" name="directory-path" required>
-
-        <!-- Submit Button -->
-        <button type="submit" class="btn-get-started">Submit</button>
+        <input type="text" id="directory-path" name="directory-path" class="form-control" required>
+        <button type="submit" class="btn btn-dark">Submit</button>
       </div>
     </form>
   </div>
 
 
 </div>
-
+<footer>
+  <div class="container-md text-center ">
+    <h6>All rights reserved by Capgemini. Copyright &copy;2024</h6>
+  </div>
+</footer>
 <script src="js/main.js"></script>
 </body>
 
