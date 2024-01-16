@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>URL Form</title>
+  <title>Class Scanner</title>
 
-
+  <link href="img/cg-favicon.png" rel="icon">
   <!-- Vendor CSS Files -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -28,27 +28,27 @@
       </ul>
     </nav><!-- .navbar -->
 
-    <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
-    <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
-
   </div>
 </header><!-- End Header -->
-<div class="container-fluid container-xl d-flex align-items-center justify-content-between">
-<h2>Enter project directory path</h2>
 
+<form action="/get-test-classes" method="get">
+  <h2>Enter project directory path</h2>
+  <!-- Input for URL -->
+  <div class="col-md-6 form-group">
+    <label for="Directory-Path" class="form-label">Enter URL: </label>
+    <input type="text" id="Directory-Path" name="Directory-Path" class="form-control" required
+           placeholder="eg., C:\folder\src\main\java\com\microservices\projectMainDirectory ">
 
-  <form action="/get-test-classes" method="get">
-    <!-- Input for URL -->
-    <div class="col-md-6 form-group">
-      <label for="Directory-Path" class="form-label">Enter URL: </label>
-      <input type="text" id="Directory-Path" name="Directory-Path" required>
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-dark">Submit</button>
+  </div>
+</form>
 
-      <!-- Submit Button -->
-      <button type="submit"  class="btn btn-dark">Submit</button>
-    </div>
-  </form>
-
-</div><!-- End Contact Form -->
+<footer>
+  <div class="container-md text-center ">
+    <h5>All rights reserved by Capgemini. Copyright &copy;2024</h5>
+  </div>
+</footer>
 </body>
 
 </html>

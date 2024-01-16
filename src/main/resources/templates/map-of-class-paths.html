@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Assertion Aces</title>
-
+  <title>Generate Test Class</title>
+  <link href="img/cg-favicon.png" rel="icon">
 
   <!-- Vendor CSS Files -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -26,29 +26,30 @@
       </ul>
     </nav><!-- .navbar -->
 
-    <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
-    <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
-
   </div>
 </header><!-- End Header -->
 
-<h2>Please choose the class to generate JUnits : </h2>
-
 <form th:action="@{/generate-tests}" method="post" id="checkboxForm">
-  <ul th:each="entry : ${mapValues}">
-    <li>
+  <h2>Please choose the class to generate JUnits : </h2>
+
+    <ul th:each="entry : ${mapValues}">
       <label>
         <input type="checkbox" class="keyCheckbox" th:name="selectedKeys" th:value="${entry.value}" />
         <span th:text="${entry.key}"></span>
       </label>
-    </li>
-  </ul>
+    </ul>
+
   <input type="hidden" id="selectedKeysInput" th:name="selectedKeysInput" />
   <button type="submit" class="btn btn-dark">Generate Tests</button>
 </form>
+<footer>
+  <div class="container-md text-center ">
+    <h5>All rights reserved by Capgemini. Copyright &copy;2024</h5>
+  </div>
+</footer>
 
 <script th:inline="javascript">
-    /* <![CDATA[ */
+
     document.addEventListener('DOMContentLoaded', function () {
         var checkboxes = document.querySelectorAll('.keyCheckbox');
 
@@ -71,7 +72,7 @@
             document.getElementById('selectedKeysInput').value = selectedKeys.join(',');
         }
     });
-    /* ]]> */
+
 </script>
 </body>
 </html>
