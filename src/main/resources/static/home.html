@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>URL Form</title>
-
+  <title>Dependency Resolver</title>
+  <link href="img/cg-favicon.png" rel="icon">
 
   <!-- Vendor CSS Files -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -15,14 +15,7 @@
 
   <!-- Template Main CSS File -->
   <link href="css/main.css" rel="stylesheet">
-  <style>
-  footer {
-    text-align: center;
-    padding: 3px;
-    background-color: #008374;
-    color: white;
-}
-    </style>
+
 </head>
 
 <body>
@@ -35,25 +28,22 @@
       </ul>
     </nav><!-- .navbar -->
 
-    <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
-    <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
-
   </div>
 </header><!-- End Header -->
 
 <div class="container">
 
-  <div class="col-lg-8" class="container position-relative">
+
     <form action="/check-and-add" method="get">
       <!-- Input for URL -->
-      <div class="col-md-6 form-group">
+
         <h2>Enter URL and Submit</h2>
         <label for="directory-path">Please provide the directory path to your project's pom.xml file: </label>
-        <input type="text" id="directory-path" name="directory-path" class="form-control" required>
+        <input type="text" id="directory-path" name="directory-path" class="form-control" required placeholder = "C:\directory\project-folder\pom.xml" >
         <button type="submit" class="btn btn-dark">Submit</button>
-      </div>
+
     </form>
-  </div>
+
 
 
 </div>
