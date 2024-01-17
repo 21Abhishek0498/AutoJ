@@ -70,7 +70,7 @@ public class ClassScannerServiceImpl implements ClassScanner{
     public boolean isDtoOrEntityClass(CompilationUnit cu) {
         return cu.findAll(ClassOrInterfaceDeclaration.class)
                 .stream()
-                .anyMatch(c -> c.isAnnotationPresent("Entity") || c.isAnnotationPresent("Getter"));
+                .anyMatch(c -> c.isAnnotationPresent("Entity") || c.isAnnotationPresent("Getter") || c.isAnnotationPresent("Data"));
     }
 
     /**
@@ -84,7 +84,7 @@ public class ClassScannerServiceImpl implements ClassScanner{
         return cu.findAll(ClassOrInterfaceDeclaration.class)
                 .stream()
                 .anyMatch(c -> c.isAnnotationPresent("Entity") || c.isAnnotationPresent("Getter")
-                        || c.isAnnotationPresent("RestController") || c.isAnnotationPresent("Controller")
+                        || c.isAnnotationPresent("RestController") || c.isAnnotationPresent("Controller") || c.isAnnotationPresent("Data")
                         || c.isAnnotationPresent("Service"));
     }
 
@@ -107,7 +107,7 @@ public class ClassScannerServiceImpl implements ClassScanner{
 
                 // Check if there is a getter method for the field or if the class is annotated with @Getter
                 if (hasGetterMethod(clazz.getMethods(), fieldName) || cu.findAll(ClassOrInterfaceDeclaration.class).stream()
-                        .anyMatch(c -> c.isAnnotationPresent("Getter"))) {
+                        .anyMatch(c -> c.isAnnotationPresent("Getter") || c.isAnnotationPresent("Data"))) {
                     return true;
                 }
 

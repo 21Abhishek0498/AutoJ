@@ -137,7 +137,7 @@ public class ClassWriter implements Writer {
 //        File outputDirectory = new File("src/test/java");
         String fileOutputPath =  classPath.substring(0,classPath.indexOf("src"));
 //        String packageName = testClasses.getPackageName().replace(".","\\");
-        fileOutputPath = fileOutputPath.concat("src\\test\\");
+        fileOutputPath = fileOutputPath.concat("src\\test\\java\\");
         System.out.print("fileOutputPath = "+fileOutputPath);
         File outputDirectory = new File(fileOutputPath);
 
